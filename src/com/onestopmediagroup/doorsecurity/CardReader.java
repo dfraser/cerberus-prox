@@ -1,19 +1,58 @@
+/*
+ * Copyright 2008 Dan Fraser
+ *
+ * This file is part of Cerberus-Prox.
+ *
+ * Cerberus-Prox is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Cerberus-Prox is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Cerberus-Prox.  If not, see <http://www.gnu.org/licenses/>.
+ * 
+ */
+
 package com.onestopmediagroup.doorsecurity;
 
 import java.io.IOException;
 
-import org.apache.log4j.Logger;
 
+/**
+ * A class to handle interfacing with a card reader and door strike, 
+ * via a Cerberus-Prox RS-232 interface board.
+ * 
+ * @author dfraser
+ *
+ */
 public class CardReader {
 	
-	private static Logger log = Logger.getLogger(CardReader.class);
+	// private static Logger log = Logger.getLogger(CardReader.class);
 
+	/**
+	 * The serial port used to communicate with the Cerberus-Prox board.
+	 */
 	private final RS232SerialPort port;
 	
+	/**
+	 * Creates a new CardReader object.
+	 * @param port the serial port used to communicate with the Cerberus-Prox board.
+	 */
 	public CardReader(RS232SerialPort port) {
 		this.port = port;
 	}
 	
+	/**
+	 * Reads any available data from the Cerberus-Prox board.
+	 * If the data included a card read, the card data is returned.
+	 * @return a {@link HIDCard} object if a card was read, null otherwise.
+	 * @throws IOException if there was an error reading from the serial port.
+	 */
 	public synchronized HIDCard read() throws IOException {
 		HIDCard hid = null;
 		byte[] buf = new byte[1024];
@@ -41,7 +80,7 @@ public class CardReader {
 	
 	/**
 	 * Indicates an error by sounding the beeper for 2 seconds.
-	 * @throws IOException
+	 * @throws IOException if there was an error reading from the serial port.
 	 */
 	public synchronized void errorBeep() throws IOException {
 		byte[] beep = { 'B','2', '\n'};
@@ -52,7 +91,7 @@ public class CardReader {
 
 	/**
 	 * Indicates an error by sounding the beeper for 2 seconds.
-	 * @throws IOException
+	 * @throws IOException if there was an error reading from the serial port.
 	 */
 	public synchronized void notifyBeep() throws IOException {
 		try {
@@ -71,19 +110,11 @@ public class CardReader {
 		
 	}
 
-	public void flush() {
-		try {
-			port.flushReceiver();
-		} catch (IOException e) {
-			log.error("got ioexception flushing buffer: "+e.getMessage());
-			// no big deal...
-		}
-	}
-	
 	/** 
 	 * Opens the door by opening the strike and turning the led green for 4 seconds.
+	 * 
 	 * @param seconds how long to hold the door open
-	 * @throws IOException
+	 * @throws IOException if there was an error reading from the serial port.
 	 */
 	public synchronized void openDoor(int seconds) throws IOException {
 
@@ -102,8 +133,9 @@ public class CardReader {
 	/** 
 	 * Sets the absolute state of the latches in the door controller and returns the current 
 	 * communication status.
+	 * 
 	 * @param unlocked whether or not the door should be unlocked
-	 * @throws IOException if serial port communication failed
+	 * @throws IOException if there was an error reading from the serial port.
 	 */
 	public synchronized void setDoorLatches(boolean unlocked) throws IOException {
 		byte strike = unlocked ? (byte)'L' : (byte)'0';
