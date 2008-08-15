@@ -92,7 +92,7 @@ reader may beep and flash its LED green by itself when a card is
 presented. The LED and beep wires appear to OR their inputs with the
 internal HID reader logic.
 
-{{{
+<pre>
   HID/Strike Board Commands: (send these to the board)
 
   Commands take the form of: CP\n
@@ -132,7 +132,7 @@ internal HID reader logic.
 		c = 4s bit
 		b = 2s bit
 		a = 1s bit
-}}}
+</pre>
 
 ==Limitations==
 
