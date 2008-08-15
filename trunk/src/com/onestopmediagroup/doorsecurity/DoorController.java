@@ -1,3 +1,23 @@
+/*
+ * Copyright 2008 Dan Fraser
+ *
+ * This file is part of Cerberus-Prox.
+ *
+ * Cerberus-Prox is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Cerberus-Prox is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Cerberus-Prox.  If not, see <http://www.gnu.org/licenses/>.
+ * 
+ */
+
 package com.onestopmediagroup.doorsecurity;
 import java.io.IOException;
 
@@ -37,6 +57,9 @@ public class DoorController extends Thread {
 		port.setRxTimeout(1000);
 	}
 	
+	/**
+	 * The main program loop for each door.
+	 */
 	@Override
 	public void run() {
 		super.run();
@@ -49,13 +72,13 @@ public class DoorController extends Thread {
 					AccessInfo ai = av.checkAccess(card.getCardId());
 					if (ai.isMagic()) {
 						// this is a magic card.  switch the door state.
-						boolean oldState = av.isForceUnlocked();
+						boolean oldState = av.forceUnlocked;
 						av.setDefaultUnlocked(!oldState);
-						av.logAccess(card.getCardId(), true, "magic card unlocked state = "+av.isForceUnlocked()+" (was "+oldState+")");
+						av.logAccess(card.getCardId(), true, "magic card unlocked state = "+av.forceUnlocked+" (was "+oldState+")");
 						cr.notifyBeep();
 					} else {
 						if (ai.isAllowed()) {
-							if (!av.isForceUnlocked()) {
+							if (!av.forceUnlocked) {
 								cr.openDoor(4);
 							}
 							av.logAccess(card.getCardId(), true, "");
@@ -77,7 +100,7 @@ public class DoorController extends Thread {
 						synchronized (this) {
 							triggerOpen = false;						
 						}
-						if (!av.isForceUnlocked()) {
+						if (!av.forceUnlocked) {
 							cr.openDoor(4);
 							try {
 								Thread.sleep(4000);
@@ -90,7 +113,7 @@ public class DoorController extends Thread {
 					// update the door state
 					if (lastPollTime + pollInterval < System.currentTimeMillis()) {
 						lastPollTime = System.currentTimeMillis();
-						cr.setDoorLatches(av.isForceUnlocked());
+						cr.setDoorLatches(av.forceUnlocked);
 					}
 				}
 			} catch (IOException e) {

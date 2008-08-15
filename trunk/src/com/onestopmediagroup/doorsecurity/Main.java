@@ -1,3 +1,23 @@
+/*
+ * Copyright 2008 Dan Fraser
+ *
+ * This file is part of Cerberus-Prox.
+ *
+ * Cerberus-Prox is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Cerberus-Prox is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Cerberus-Prox.  If not, see <http://www.gnu.org/licenses/>.
+ * 
+ */
+
 package com.onestopmediagroup.doorsecurity;
 
 import java.io.FileInputStream;
@@ -5,8 +25,6 @@ import java.io.IOException;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Properties;
 
 import org.apache.commons.daemon.Daemon;
@@ -25,17 +43,20 @@ public class Main implements Daemon {
 	/**
 	 * Main entry point to the application.
 	 * 
-	 * @param args
+	 * @param args there are no command line arguments yet....
 	 */ 
 	public static void main(String[] args) throws Exception {
 		Main main = new Main();
 		main.start();
 	}
 	
+	/**
+	 * Startup hook for the Commons-Daemon system.  Loads the configuration 
+	 * and kicks off a {@link DoorController} for each door. 
+	 */
 	@Override
 	public void start() throws Exception {
 		PropertyConfigurator.configure("log4j.properties");
-		
 		
 		FileInputStream fis;
 		Properties properties = new Properties();
@@ -44,7 +65,7 @@ public class Main implements Daemon {
 			properties.load(fis);
 		} catch (IOException e) {
 			System.err.println("couldn't open properties file (doorsystem.properties): "+e.getMessage());
-			System.exit(1);
+			return;
 		}		
 		
 		String dbDriver = properties.getProperty("dbDriver");
@@ -83,13 +104,16 @@ public class Main implements Daemon {
 			dc.start();
 		}
 		
-		
 		// start xml-rpc server
 		ServerThread server = new ServerThread();
 		server.start();
   
 	}
-
+	
+	/**
+	 * Handler for the Commons-Daemon system.  Attempts to shut down all
+	 * {@link DoorController} threads.
+	 */
 	@Override
 	public void stop() throws Exception {
 
@@ -107,13 +131,18 @@ public class Main implements Daemon {
 		// nop
 	}
 
-
 	@Override
 	public void init(DaemonContext arg0) throws Exception {
 		// nop
 		
 	}
 
+	/**
+	 * Basic server class to handle the prototype XML-RPC interface.
+	 * 
+	 * @author dfraser
+	 *
+	 */
 	private class ServerThread extends Thread {	
 		@Override
 		public void run() {
