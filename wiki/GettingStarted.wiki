@@ -71,7 +71,14 @@ tar xf cerberus-prox-1.0.tar.gz
   * Copy the compiled jsvc binary into the distribution 'bin' directory and make it executable.
   * Copy the librxtxSerial.so from the RXTX distribution into ${JAVA_HOME}/lib/i386
   * Please the prerequisite jar files (see above) into the distribution 'lib' directory.
-  * Copy the distribution init.d/doorsystem file to /etc/init.d, and check to make sure the variables at the top of the file are sane.
+  * Copy the distribution init.d/doorsystem file to /etc/init.d, and check to make sure the variables at the top of the file are sane.  Make sure it's executable.
+
+{{{
+cp /usr/local/src/commons-daemon/bin/jsvc bin/
+cp /usr/local/src/rxtx-2.1-7/linux-i386/rxtxSerial.so ${JAVA_HOME}/lib/i386
+cp init.d/doorsystem /etc/init.d/
+chmod 755 /etc/init.d/doorsystem
+}}}
 
 === Edit the Properties File ===
 
@@ -90,3 +97,7 @@ Everything will work perfectly the first time.
 (just kidding)
 
 === Troubleshoot It ===
+
+This is a complex system with a lot of moving parts, so it probably won't work for you the first time.  Don't be alarmed.  We will help you through it.
+
+Start by editing /etc/init.d/doorsystem and adding '-debug' to the jsvc command line in the start() section.  Try the startup again, and this time you will get much more debug output.  This will show you if you have any problems with rxtx, missing libraries, or that sort of thing.
