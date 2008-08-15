@@ -1,10 +1,9 @@
 #summary Helpful introduction to the Cerberus-Prox hardware.
 
-Cerberus-Prox HID/Strike Control Board
-======================================
+=Cerberus-Prox HID/Strike Control Board=
 
-Introduction
-------------
+==Introduction==
+
 This hardware is a companion for the cerberus-prox Java software that
 runs on the client side. The hardware interfaces between a HID
 ProxPoint clock and data reader (Model: 6008BGB00 or similar) and
@@ -18,15 +17,15 @@ where the HID reader is installed. Since readers come with fairly
 short cables, you might need to extend the included wires on the
 reader. Up to a few metres this should not pose a problem.
 
-Circuit Details
----------------
+==Circuit Details==
+
 Please review the schematic for information on the hardware. The PCB
 is designed for single-sided so that it can be made by hand using DIY
 photo etching. Also, only through-hole components have been used to
 aid in building by hand. It is suggested to use a small plastic
 project enclosure if the system is being installed permanently.
 
-Power Supply:
+===Power Supply===
 
 The power supply should be a DC supply of the same voltage as your
 electric door strike. Usually this will be either 12V or 24V. AC can
@@ -42,7 +41,7 @@ about 130mA with the relay switched on. When sizing a supply for your
 system, add the power needed by the strike. Multiply by the number of
 doors in your system.
 
-HID Reader Wiring:
+===HID Reader Wiring===
 
 The HID reader has 10 wires, and all have been implemented on the
 HID/strike board. Not all are required for normal operation but it is
@@ -51,14 +50,14 @@ need to omit some, it's probably safe to leave RED_LED, HOLD and
 CARD_PRESENT lines unconnected as these are not currently used by the
 HID/strike board firmware.
 
-Heatsinking U3:
+===Heatsinking U3===
 
 Make sure you use a good heatsink on U3. With 24V going in, under
 normal operation U3 will dissipate over 2W. It might get toasty, but
 should fine.
 
-Host Wiring
------------
+==Host Wiring==
+
 To connect the HID/strike board to your computer and power, it is
 recommended to use CAT5e cable. The recommended colour codes are shown
 on the schematic. The power and ground wires use a pair each to avoid
@@ -73,8 +72,8 @@ RS-232 should work fine and makes it easy to connect to a PC. Each
 HID/strike board needs its own RS-232 port. Get a PCI or USB
 multi-port RS-232 adapter if you need more ports.
 
-RS-232 Protocol
----------------
+==RS-232 Protocol==
+
 The RS-232 protocol for the HID/strike board is designed to be really
 simple, and human-readable so that you can test it with a terminal
 program. Use 9600 baud, N-8-1 settings on your host with no flow
@@ -93,7 +92,7 @@ reader may beep and flash its LED green by itself when a card is
 presented. The LED and beep wires appear to OR their inputs with the
 internal HID reader logic.
 
-
+{{{
   HID/Strike Board Commands: (send these to the board)
 
   Commands take the form of: CP\n
@@ -133,8 +132,9 @@ internal HID reader logic.
 		c = 4s bit
 		b = 2s bit
 		a = 1s bit
+}}}
 
-Limitations:
+==Limitations==
 
 Currently there are 5 GPIO pins supported on the PCB but they are not
 implemented in the firmware. This should be fixed in the next version.
