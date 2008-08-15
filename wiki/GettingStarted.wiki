@@ -12,8 +12,7 @@ Cerberus-Prox depends on several third-party Java libraries, which should be ava
   * [http://logging.apache.org/log4j/1.2/index.html Log4J] (1.2.15) 
   * [http://users.frii.com/jarvi/rxtx/ RXTX] -- plus installed JNI binary (2.1-7)
   * [http://www.mysql.com/products/connector-j Mysql Connector/J] (5.1.6)
-  * [http://commons.apache.org/daemon/ Commons-Daemon] (1.0.1) -- jar plus compiled jsvc 
-binary
+  * [http://commons.apache.org/daemon/ Commons-Daemon] (1.0.1) -- jar plus compiled jsvc binary
   * [http://www.mortbay.org/jetty-6/ Jetty] (6.1.11)
   * [http://xmlrpc.sourceforge.net/ Redstone XML-RPC] (1.1)
 
