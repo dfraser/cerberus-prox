@@ -1,13 +1,23 @@
-#summary One-sentence summary of this page.
+#summary Getting Started with Cerberus-Prox
 
 = Introduction =
 
-Add your content here.
+This page will help you get the Cerberus-Prox Java software up and running.
 
 
-= Details =
+== Prerequisites ==
 
-Add your content here.  Format your content with:
-  * Text in *bold* or _italic_
-  * Headings, paragraphs, and lists
-  * Automatic links to other wiki pages
+Cerberus-Prox depends on several third-party Java libraries, which should be available in your classpath.  Versions in parenthesis are the ones used in development, but newer versions should work fine.
+
+* [http://logging.apache.org/log4j/1.2/index.html Log4J] (1.2.15) 
+
+* [http://users.frii.com/jarvi/rxtx/ RXTX] (2.1-7)
+
+* [http://www.mysql.com/products/connector-j Mysql Connector/J] (5.1.6)
+
+* [http://commons.apache.org/daemon/ Commons-Daemon] (1.0.1) -- jar plus compiled jsvc 
+binary
+
+* [http://www.mortbay.org/jetty-6/ Jetty] (6.1.11)
+
+* [http://xmlrpc.sourceforge.net/ Redstone XML-RPC] (1.1)
