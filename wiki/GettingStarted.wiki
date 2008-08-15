@@ -26,3 +26,53 @@ You should end up with the following jars in your classpath:
   * jetty-util-6.1.11.jar
   * servlet-api-2.5-6.1.11.jar
   * xmlrpc-1.1.jar
+
+== Installation on Linux-Style Systems ==
+
+This installation instruction will cover RedHat-style systems.  Your system may vary.  This code has been tested to work on Fedora and Windows.  
+
+=== Install Java and set your JAVA_HOME ==
+
+  * Cerberus-Prox requires at least Java5 JRE.
+  * It can be anywhere on your system, but point JAVA_HOME appropriately.
+
+=== Setup MySQL ===
+
+  * Set up MySQL (or other SQL database, but only MySQL has been tested).
+  * Create a database and install the Cerberus-Prox schema from the included SQL script.
+
+{{{
+mysql -u root -p door_database < sql/create_tables_mysql_5.sql 
+}}}
+
+  * Set up a MySQL user and password with access to insert, update and select from your new database.
+
+  * Double-check your settings by connecting as this user from another MySQL client.
+
+  * Add one or more Door definitions into the 'door' table, add an access group, and grant access to your door.
+
+{{{
+mysql> insert into door (id, name,default_unlocked) values (1,'front','N');
+
+mysql> insert into access_group (id,name) values (1,'General');
+
+mysql> insert info door_access (door_id, access_group_id) values (1,1);
+}}}
+
+=== Unpack the Distribution Tarball ===
+
+{{{
+cd /usr/local
+tar xf cerberus-prox-1.0.tar.gz
+}}}
+
+=== Prepare the Prerequisites ===
+
+  * Copy the compiled jsvc binary into the distribution 'bin' directory and make it executable.
+  * Copy the librxtxSerial.so from the RXTX distribution into ${JAVA_HOME}/lib/i386
+  * Please the prerequisite jar files (see above) into the distribution 'lib' directory.
+  * Copy the distribution init.d/doorsystem file to /etc/init.d, and check to make sure the variables at the top of the file are sane.
+
+=== Edit the Properties File ===
+
+  * open doorsystem.properties 
