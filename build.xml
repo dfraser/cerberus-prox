@@ -45,11 +45,16 @@
 
 	<target name="tarball" depends="jar" description="Creates the distribution tarball">
 		<copy file="log4j.properties" todir="${dist}/cerberus-prox-${cerberus-prox.version}/" />
+		<copy file="COPYING" todir="${dist}/cerberus-prox-${cerberus-prox.version}/" />
+		<copy file="doorsystem.properties" todir="${dist}/cerberus-prox-${cerberus-prox.version}/" />
 		<mkdir dir="${dist}/cerberus-prox-${cerberus-prox.version}/logs" />
 		<mkdir dir="${dist}/cerberus-prox-${cerberus-prox.version}/bin" />
 		<mkdir dir="${dist}/cerberus-prox-${cerberus-prox.version}/lib" />
 		<copy todir="${dist}/cerberus-prox-${cerberus-prox.version}">
 			<fileset dir="." includes="init.d/**" />
+		</copy>
+		<copy todir="${dist}/cerberus-prox-${cerberus-prox.version}">
+			<fileset dir="." includes="sql/**" />
 		</copy>
 		<chmod perm="0755" file="${dist}/cerberus-prox-${cerberus-prox.version}/init.d/supervisor" />
 		<tar destfile="${dist}/cerberus-prox-${cerberus-prox.version}.tar.gz" compression="gzip" basedir="${dist}" includes="cerberus-prox-${cerberus-prox.version}/**" longfile="gnu"/>
