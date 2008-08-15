@@ -75,4 +75,18 @@ tar xf cerberus-prox-1.0.tar.gz
 
 === Edit the Properties File ===
 
-  * open doorsystem.properties 
+  * open doorsystem.properties in your favourite editor.
+  * define door0 and port0 for the door you created in the database and the serial port connected to your Cerberus-Prox board.  The door name must match exactly or things won't work for you.
+  * define the MySQL connection information for your new database, user and password.
+
+=== Run it! ===
+
+{{{
+service doorsystem start
+}}}
+
+Everything will work perfectly the first time.
+
+(just kidding)
+
+=== Troubleshoot It ===
