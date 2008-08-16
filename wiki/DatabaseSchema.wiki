@@ -12,12 +12,15 @@ The doors table enumerates all of the doors in the system.  This table also incl
 
 == Access_Groups Table ==
 
-This table is a list of the access groups involved in the system.
+This table is a list of the access groups involved in the system.   An access group is a set of doors which can be opened by a specific person.  I would suggest making an "Admin" group which contains all doors, and then other groups as you see fit.
 
 == Door_Access  Table==
 
-This table represents the relationship between doors and access groups.  To give an access group access to a door, insert a row into this table.
+This table represents the relationship between doors and access groups.  To give an Access Group access to a door, insert a row into this table.
 
 == Cards Table ==
 
-This table represents the authorized users of the system.  Each user has a card_id in the format <premise code>-<card code>.  You can enter the username, a start date, and an expiry date for your convenience.  The 'disabled' field will disable a card (disallow access) without removing it from the database.  The 'magic' field will create a "magic" card, which can be used to toggle the locked/unlocked state of a door.
+This table represents the authorized users of the system.  Each user has a `card_id` in the format `<premise code>-<card code>`.  You can enter the user's name, a start date, and an expiry date for your convenience.  The 'disabled' field will disable a card (disallow access) without removing it from the database.  The `magic` field will create a "magic" card, which can be used to toggle the locked/unlocked state of a door.
+
+To find the `card_id` of an unknown card, you can present it to a reader and then take a look at the end of the log file or the `access_log` table in the database.
+
