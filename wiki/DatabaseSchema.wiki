@@ -2,7 +2,7 @@
 
 = Introduction =
 
-The database for cerberus-proxy is fairly simple and easy to manipulate by hand.  This document will describe the various tables and explain what to put in them.
+The database for cerberus-prox is fairly simple and easy to manipulate by hand.  This document will describe the various tables and explain what to put in them.
 
 I recommend installing a database management tool such as PhpMyAdmin to manage configurations and users.
 
