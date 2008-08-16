@@ -1,0 +1,30 @@
+#summary How the database works
+
+= Introduction =
+
+The database for cerberus-proxy is fairly simple and easy to manipulate by hand.  This document will describe the various tables and explain what to put in them.
+
+I recommend installing a database management tool such as PhpMyAdmin to manage configurations and users.
+
+== Doors Table ==
+
+The doors table enumerates all of the doors in the system.  This table also includes a field which indicates whether or not the door should be unlocked by default.  If you change the value of this field, the state of the door lock will change the next time the cache is reloaded by the application.
+
+== Access_Groups Table ==
+
+This table is a list of the access groups involved in the system.
+
+== Door_Access  Table==
+
+This table represents the relationship between doors and access groups.  To give an access group access to a door, insert a row into this table.
+
+== Cards Table ==
+
+This table represents the authorized users of the system.  Each user has a card_id in the format <premise code>-<card code>.  You can enter the username, a start date, and an expiry date for your convenience.  The 'disabled' field will disable a card (disallow access) without removing it from the database.  The 'magic' field will create a "magic" card, which can be used to toggle the locked/unlocked state of a door.
+
+
+
+Add your content here.  Format your content with:
+  * Text in *bold* or _italic_
+  * Headings, paragraphs, and lists
+  * Automatic links to other wiki pages
