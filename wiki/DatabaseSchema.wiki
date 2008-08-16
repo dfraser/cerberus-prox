@@ -21,10 +21,3 @@ This table represents the relationship between doors and access groups.  To give
 == Cards Table ==
 
 This table represents the authorized users of the system.  Each user has a card_id in the format <premise code>-<card code>.  You can enter the username, a start date, and an expiry date for your convenience.  The 'disabled' field will disable a card (disallow access) without removing it from the database.  The 'magic' field will create a "magic" card, which can be used to toggle the locked/unlocked state of a door.
-
-
-
-Add your content here.  Format your content with:
-  * Text in *bold* or _italic_
-  * Headings, paragraphs, and lists
-  * Automatic links to other wiki pages
