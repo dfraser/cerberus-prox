@@ -36,9 +36,9 @@ public class RemoteControlService extends XmlRpcServlet {
 
 	private static final long serialVersionUID = 2091781880167729012L;
 	
-	private HashMap<String, DoorController> doorControllers;
+	private Map<String, DoorController> doorControllers;
 
-	public RemoteControlService(HashMap<String,DoorController> doorControllers) {
+	public RemoteControlService(Map<String,DoorController> doorControllers) {
 		this.doorControllers = doorControllers;
 	}
 
