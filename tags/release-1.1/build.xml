@@ -1,0 +1,69 @@
+<project name="cerberus-prox" default="tarball" basedir=".">
+	<description>
+        supervisor build file
+    </description>
+
+	<!-- this sets the cerberus-prox.version property -->
+	<property file="src/com/onestopmediagroup/doorsecurity/version.properties"/>
+
+	<property name="src" location="src"/>
+	<property name="build" location="build"/>
+	<property name="dist"  location="dist"/>
+	<property name="lib"  location="lib"/>
+
+	<target name="init">
+		<!-- Create the time stamp -->
+		<tstamp/>
+		<!-- Create the build directory structure used by compile -->
+		<mkdir dir="${build}"/>
+	</target>
+
+	<target name="compile" depends="init"
+        description="compile the source " >
+
+		<javac debug="true" srcdir="${src}" destdir="${build}" target="1.5">
+			<classpath>
+				<fileset dir="lib">
+					<include name="**/*.jar"/>
+				</fileset>
+			</classpath>
+		</javac>
+	</target>
+
+	<target name="jar" depends="compile"
+        description="generate the distribution" >
+		<!-- Create the distribution directory -->
+		<mkdir dir="${dist}/cerberus-prox-${cerberus-prox.version}"/>
+		<copy todir="${build}/com/onestopmediagroup/doorsecurity" file="${src}/com/onestopmediagroup/doorsecurity/version.properties" />
+		<jar jarfile="${dist}/cerberus-prox-${cerberus-prox.version}/cerberus-prox.jar" basedir="${build}">
+			<manifest>
+				<attribute name="Main-Class" value="com/onestopmediagroup/doorsecurity/Main"/>
+			</manifest>
+		</jar>
+		
+	</target>
+
+	<target name="tarball" depends="jar" description="Creates the distribution tarball">
+		<copy file="log4j.properties" todir="${dist}/cerberus-prox-${cerberus-prox.version}/" />
+		<copy file="COPYING" todir="${dist}/cerberus-prox-${cerberus-prox.version}/" />
+		<copy file="doorsystem.properties" todir="${dist}/cerberus-prox-${cerberus-prox.version}/" />
+		<mkdir dir="${dist}/cerberus-prox-${cerberus-prox.version}/logs" />
+		<mkdir dir="${dist}/cerberus-prox-${cerberus-prox.version}/bin" />
+		<mkdir dir="${dist}/cerberus-prox-${cerberus-prox.version}/lib" />
+		<copy todir="${dist}/cerberus-prox-${cerberus-prox.version}">
+			<fileset dir="." includes="init.d/**" />
+		</copy>
+		<copy todir="${dist}/cerberus-prox-${cerberus-prox.version}">
+			<fileset dir="." includes="sql/**" />
+		</copy>
+		<chmod perm="0755" file="${dist}/cerberus-prox-${cerberus-prox.version}/init.d/supervisor" />
+		<tar destfile="${dist}/cerberus-prox-${cerberus-prox.version}.tar.gz" compression="gzip" basedir="${dist}" includes="cerberus-prox-${cerberus-prox.version}/**" longfile="gnu"/>
+	</target>
+
+	<target name="clean"
+        description="clean up" >
+		<!-- Delete the ${build} and ${dist} directory trees -->
+		<delete dir="${build}"/>
+		<delete dir="${dist}"/>
+	</target>
+</project>
