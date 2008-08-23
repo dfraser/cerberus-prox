@@ -20,7 +20,7 @@
 
 package com.onestopmediagroup.doorsecurity;
 
-import java.util.HashMap;
+import java.util.Map;
 
 
 /**
@@ -30,9 +30,9 @@ import java.util.HashMap;
  *
  */
 public class RemoteControlHandler {
-	private final HashMap<String, DoorController> doorControllers;
+	private final Map<String, DoorController> doorControllers;
 
-	public RemoteControlHandler(HashMap<String,DoorController> doorControllers) {
+	public RemoteControlHandler(Map<String, DoorController> doorControllers) {
 		this.doorControllers = doorControllers;
 	}
 	

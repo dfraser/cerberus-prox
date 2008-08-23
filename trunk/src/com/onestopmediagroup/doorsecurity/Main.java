@@ -20,12 +20,7 @@
 
 package com.onestopmediagroup.doorsecurity;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Properties;
 
 import org.apache.commons.daemon.Daemon;
 import org.apache.commons.daemon.DaemonContext;
@@ -38,7 +33,7 @@ import org.mortbay.jetty.servlet.ServletHolder;
 public class Main implements Daemon {
 
 	private static Logger log = Logger.getLogger(Main.class);
-	private HashMap<String,DoorController> doorControllers = new HashMap<String,DoorController>();
+	private Session session;
 	
 	/**
 	 * Main entry point to the application.
@@ -56,58 +51,22 @@ public class Main implements Daemon {
 	 */
 	@Override
 	public void start() throws Exception {
+
 		PropertyConfigurator.configure("log4j.properties");
-		
-		FileInputStream fis;
-		Properties properties = new Properties();
-		try {
-			fis = new FileInputStream("doorsystem.properties");
-			properties.load(fis);
-		} catch (IOException e) {
-			System.err.println("couldn't open properties file (doorsystem.properties): "+e.getMessage());
-			return;
-		}		
-		
-		String dbDriver = properties.getProperty("dbDriver");
-		String dbUrl = properties.getProperty("dbUrl");
-		
-		if (dbDriver == null || dbUrl == null) {
-			throw new IllegalArgumentException("expected property dbDriver and/or dbUrl not found");
-		}
-		
-		Enumeration<Object> propKeys = properties.keys();
-		try {
-			while (propKeys.hasMoreElements()) {
-				String keyName = (String) propKeys.nextElement();
-				if (keyName.startsWith("port")) {
-					int portNum = Integer.parseInt(keyName.substring(4));
-					String port = properties.getProperty(keyName);
-					String doorName = properties.getProperty("name"+portNum);					
-					if (doorName == null) {
-						throw new IllegalArgumentException("expected property (name"+portNum+") not found");
-					}
-					RS232SerialPort comPort = new RS232SerialPort(port,9600,1000);
-					DoorController dc = new DoorController(comPort, doorName, dbUrl, dbDriver);
-					doorControllers.put(doorName,dc);
-				}
-		     }
-		} catch (IOException e) {
-			System.err.println("Error configuring system: "+e.getMessage());
-			e.printStackTrace();
-			System.exit(1);
-		}
-		
+
+		session = new Session();
 		log.debug("starting controller threads...");
 		// let's get going!
-		for (Iterator<DoorController> dcIter = doorControllers.values().iterator(); dcIter.hasNext();) {
+		for (Iterator<DoorController> dcIter = session.getDoorControllers().values().iterator(); dcIter.hasNext();) {
 			DoorController dc = (DoorController) dcIter.next();
 			dc.start();
 		}
 		
 		// start xml-rpc server
-		ServerThread server = new ServerThread();
-		server.start();
-  
+		if (session.getRpcServerEnabled() && session.getRpcListenPort() != 0) {
+			ServerThread server = new ServerThread(session);
+			server.start();
+		}
 	}
 	
 	/**
@@ -118,7 +77,7 @@ public class Main implements Daemon {
 	public void stop() throws Exception {
 
 		log.debug("shutting down controller threads...");
-		for (Iterator<DoorController> dcIter = doorControllers.values().iterator(); dcIter.hasNext();) {
+		for (Iterator<DoorController> dcIter = session.getDoorControllers().values().iterator(); dcIter.hasNext();) {
 			DoorController dc = (DoorController) dcIter.next();
 			dc.interrupt();
 		}
@@ -143,14 +102,22 @@ public class Main implements Daemon {
 	 * @author dfraser
 	 *
 	 */
-	private class ServerThread extends Thread {	
+	private class ServerThread extends Thread {
+		
+		private final int port;
+
+		public ServerThread(Session session) {
+			this.port = session.getRpcListenPort();
+			
+		}
+		
 		@Override
 		public void run() {
 			try {
 				super.run();
-				Server server = new Server(8080);
+				Server server = new Server(port);
 		    	Context context = new Context(server,"/",Context.SESSIONS);
-		    	context.addServlet(new ServletHolder(new RemoteControlService(doorControllers)), "/xml-rpc/*");        
+		    	context.addServlet(new ServletHolder(new RemoteControlService(session.getDoorControllers())), "/xml-rpc/*");        
 		    	server.start();
 			} catch (Exception e) {
 				log.error("couldn't start server: "+e.getMessage());
