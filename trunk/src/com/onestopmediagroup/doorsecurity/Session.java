@@ -13,6 +13,10 @@ public class Session {
 	private final Map<String, DoorController> doorControllers = new HashMap<String, DoorController>();
 	private final Boolean rpcServerEnabled;
 	private final int rpcListenPort;
+	private final int cacheReloadSeconds;
+	private final String dbUrl;
+	private final String dbDriver;
+	
 
 	public Session() throws IOException {
 		
@@ -33,13 +37,18 @@ public class Session {
 			rpcListenPort = 0;
 		}
 
-		
-		String dbDriver = properties.getProperty("dbDriver");
-		String dbUrl = properties.getProperty("dbUrl");
+		dbDriver = properties.getProperty("dbDriver");
+		dbUrl = properties.getProperty("dbUrl");
 		
 		if (dbDriver == null || dbUrl == null) {
 			throw new IllegalArgumentException("expected property dbDriver and/or dbUrl not found");
 		}
+		
+		if (properties.getProperty("cacheReloadSeconds") != null) {
+			cacheReloadSeconds = Integer.parseInt(properties.getProperty("cacheReloadSeconds"));
+		} else {
+			cacheReloadSeconds = 120; // reasonable default
+		}		
 		
 		Enumeration<Object> propKeys = properties.keys();
 		while (propKeys.hasMoreElements()) {
@@ -53,22 +62,36 @@ public class Session {
 							"expected property (name" + portNum + ") not found");
 				}
 				RS232SerialPort comPort = new RS232SerialPort(port, 9600, 1000);
-				DoorController dc = new DoorController(comPort, doorName,
-						dbUrl, dbDriver);
+				DoorController dc = new DoorController(comPort, doorName, this);
 				doorControllers.put(doorName, dc);
 			}
 		}
+
 	}
 
 	public int getRpcListenPort() {
 		return rpcListenPort;
 	}
 
-	public Boolean getRpcServerEnabled() {
+	public Boolean isRpcServerEnabled() {
 		return rpcServerEnabled;
 	}
 
 	public Map<String, DoorController> getDoorControllers() {
 		return Collections.unmodifiableMap(doorControllers);
 	}
+	
+		
+	public int getCacheReloadSeconds() {
+		return cacheReloadSeconds;
+	}
+
+	public String getDbUrl() {
+		return dbUrl;
+	}
+	
+	public String getDbDriver() {
+		return dbDriver;
+	}
+	
 }

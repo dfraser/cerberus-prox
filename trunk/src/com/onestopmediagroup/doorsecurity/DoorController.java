@@ -50,10 +50,10 @@ public class DoorController extends Thread {
 	 * @param name the name of the door to control (from database door table)
 	 * @param dbUrl the JDBC url used to connect to the database.
 	 */
-	public DoorController(RS232SerialPort port, String name, String dbUrl, String dbDriver) {
+	public DoorController(RS232SerialPort port, String name, Session session) {
 		this.name = name;
 		this.cr = new CardReader(port);
-		this.av = new AccessVerifier(name, dbUrl, dbDriver);
+		this.av = new AccessVerifier(name, session);
 		port.setRxTimeout(1000);
 	}
 	

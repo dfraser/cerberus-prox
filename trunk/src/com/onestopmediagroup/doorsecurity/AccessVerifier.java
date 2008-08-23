@@ -63,10 +63,8 @@ public class AccessVerifier {
 	 */
 	boolean newForceUnlocked = false;
 
-	/**
-	 * The JDBC database URL for our SQL database.
-	 */
-	private final String dbUrl;
+
+	private final Session session;
 	
 	/**
 	 * Creates a new AccessVerifier object for a specific door, and loads its cache.
@@ -75,11 +73,11 @@ public class AccessVerifier {
 	 * @param dbUrl the JDBC user for our SQL database
 	 * @param dbDriver the JDBC driver classname for our SQL database
 	 */
-	public AccessVerifier(String doorName, String dbUrl, String dbDriver) {
+	public AccessVerifier(String doorName, Session session) {
 		this.doorName = doorName;
-		this.dbUrl = dbUrl;
+		this.session = session;
 		try {
-			Class.forName(dbDriver).newInstance();
+			Class.forName(session.getDbDriver()).newInstance();
 		} catch (Exception e) {
 			System.out.println("couldn't load class: "+e.getMessage());
 		}
@@ -100,7 +98,7 @@ public class AccessVerifier {
 		newCache = new HashMap<String,Boolean>();
 		Connection con = null;
 		try {
-			con = DriverManager.getConnection(dbUrl);
+			con = DriverManager.getConnection(session.getDbUrl());
 			PreparedStatement pstmt = null;
 			pstmt = con.prepareStatement("update door "
 					+"set default_unlocked = ? "
@@ -132,7 +130,7 @@ public class AccessVerifier {
 		Connection con = null;
 		try {
 			log.trace("loading cache for door: "+doorName);
-			con = DriverManager.getConnection(dbUrl);
+			con = DriverManager.getConnection(session.getDbUrl());
 			PreparedStatement pstmt = null;
     		pstmt = con.prepareStatement("SELECT card_id, magic "
     				+"FROM card, door_access, door "
@@ -218,7 +216,7 @@ public class AccessVerifier {
 		public void run() {
 			while (!this.isInterrupted()) {
 				try { 
-					Thread.sleep(60*1000); // every 5 minutes
+					Thread.sleep(session.getCacheReloadSeconds()*1000); // every 5 minutes
 					updateCache();
 				} catch (InterruptedException e) {
 					return;
@@ -238,7 +236,7 @@ public class AccessVerifier {
 		Connection con = null;
 		try {
 			log.info(cardId+","+doorName+","+(allowed?"allowed":"denied")+","+detail);
-			con = DriverManager.getConnection(dbUrl);
+			con = DriverManager.getConnection(session.getDbUrl());
 			PreparedStatement pstmt = null;
     		pstmt = con.prepareStatement("insert into access_log (logged, card_id, action, door, detail) values (now(),?,?,?,?)");
     		pstmt.setString(1, cardId);

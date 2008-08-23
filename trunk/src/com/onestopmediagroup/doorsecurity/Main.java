@@ -63,7 +63,7 @@ public class Main implements Daemon {
 		}
 		
 		// start xml-rpc server
-		if (session.getRpcServerEnabled() && session.getRpcListenPort() != 0) {
+		if (session.isRpcServerEnabled() && session.getRpcListenPort() != 0) {
 			ServerThread server = new ServerThread(session);
 			server.start();
 		}
