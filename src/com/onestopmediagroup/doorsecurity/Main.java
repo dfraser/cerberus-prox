@@ -22,15 +22,13 @@ package com.onestopmediagroup.doorsecurity;
 
 import java.util.Iterator;
 
-import org.apache.commons.daemon.Daemon;
-import org.apache.commons.daemon.DaemonContext;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.servlet.Context;
 import org.mortbay.jetty.servlet.ServletHolder;
 
-public class Main implements Daemon {
+public class Main {
 
 	private static Logger log = Logger.getLogger(Main.class);
 	private Session session;
@@ -49,7 +47,6 @@ public class Main implements Daemon {
 	 * Startup hook for the Commons-Daemon system.  Loads the configuration 
 	 * and kicks off a {@link DoorController} for each door. 
 	 */
-	@Override
 	public void start() throws Exception {
 
 		PropertyConfigurator.configure("log4j.properties");
@@ -69,33 +66,20 @@ public class Main implements Daemon {
 		}
 	}
 	
-	/**
-	 * Handler for the Commons-Daemon system.  Attempts to shut down all
-	 * {@link DoorController} threads.
-	 */
-	@Override
-	public void stop() throws Exception {
-
+	public void stop() {
 		log.debug("shutting down controller threads...");
 		for (Iterator<DoorController> dcIter = session.getDoorControllers().values().iterator(); dcIter.hasNext();) {
 			DoorController dc = (DoorController) dcIter.next();
 			dc.interrupt();
 		}
-		Thread.sleep(2000);
-		System.exit(0);
+		try {
+			Thread.sleep(2000);
+		} catch (InterruptedException e) {
+			// ok to ignore, we're going to exit anyways
+		}
+		return;
 	}
-
-	@Override
-	public void destroy() {
-		// nop
-	}
-
-	@Override
-	public void init(DaemonContext arg0) throws Exception {
-		// nop
-		
-	}
-
+	
 	/**
 	 * Basic server class to handle the prototype XML-RPC interface.
 	 * 
