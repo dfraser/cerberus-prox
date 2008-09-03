@@ -36,6 +36,8 @@ import org.apache.log4j.Logger;
 public class AccessVerifier {
 
 	private static Logger log = Logger.getLogger(AccessVerifier.class);
+	private static Logger logAccess = Logger.getLogger("Access");
+	private static Logger logFriendly = Logger.getLogger("Friendly");
 	 
 	/**
 	 * The door identifier that we are checking access for.
@@ -45,12 +47,12 @@ public class AccessVerifier {
 	/**
 	 * Data storage for the access control database cache.
 	 */
-	private Map<String,Boolean> doorCache = new HashMap<String,Boolean>();
+	private Map<String,UserCard> doorCache = new HashMap<String,UserCard>();
 	
 	/**
 	 * "Double-buffer" so we can load a new cache without throwing out the old one.
 	 */
-	private Map<String,Boolean> newCache;
+	private Map<String,UserCard> newCache;
 	
 	/**
 	 * Whether or not the current door is being forced unlocked by 
@@ -95,7 +97,7 @@ public class AccessVerifier {
 	 */
 	public void setDefaultUnlocked(boolean state) {
 		// replace newcache with a fresh hashmap so we don't overwrite the old one
-		newCache = new HashMap<String,Boolean>();
+		newCache = new HashMap<String,UserCard>();
 		Connection con = null;
 		try {
 			con = DriverManager.getConnection(session.getDbUrl());
@@ -126,13 +128,13 @@ public class AccessVerifier {
 	 */
 	private void updateCache() {
 		// replace newcache with a fresh hashmap so we don't overwrite the old one
-		newCache = new HashMap<String,Boolean>();
+		newCache = new HashMap<String,UserCard>();
 		Connection con = null;
 		try {
 			log.trace("loading cache for door: "+doorName);
 			con = DriverManager.getConnection(session.getDbUrl());
 			PreparedStatement pstmt = null;
-    		pstmt = con.prepareStatement("SELECT card_id, magic "
+    		pstmt = con.prepareStatement("SELECT card_id, user, nick, after_hours, magic "
     				+"FROM card, door_access, door "
     				+"WHERE card.access_group_id = door_access.access_group_id "
     				+"AND door_access.door_id = door.id "
@@ -143,8 +145,12 @@ public class AccessVerifier {
     		pstmt.setString(1, doorName);
     		ResultSet rs = pstmt.executeQuery();
     		while (rs.next()) {
-    			boolean magic = "Y".equals(rs.getString(2)) ? true : false;
-    			newCache.put(rs.getString(1), magic);
+    			newCache.put(rs.getString("card_id"),
+    					new UserCard(rs.getString("user"), 
+    							rs.getString("nick"), 
+    							"Y".equals(rs.getString("after_hours")),
+    							"Y".equals(rs.getString("magic")
+    					)));
     		}
     		rs.close();
     		pstmt.close();
@@ -185,23 +191,10 @@ public class AccessVerifier {
 	 * Checks the access to this door for a given card id.
 	 * 
 	 * @param cardId the card id to check
-	 * @return an AccessInfo object representing the results of the check.
+	 * @return a UserCard object representing the user, or null if access was denied.
 	 */
-	public synchronized AccessInfo checkAccess(String cardId) {
-		boolean retVal = doorCache.containsKey(cardId);
-		AccessInfo ai;
-		if (retVal) {
-			if (doorCache.get(cardId)) {
-				ai = new AccessInfo(true, true);
-
-			} else {
-				ai = new AccessInfo(true, false);
-			}
-		} else {
-			ai = new AccessInfo(false, false);
-		}
-		
-		return ai;
+	public synchronized UserCard checkAccess(String cardId) {
+		return doorCache.get(cardId);
 	}
 	
 	/**
@@ -232,10 +225,14 @@ public class AccessVerifier {
 	 * @param allowed whether the action was allowed or denied
 	 * @param detail a detail message regarding the log entry
 	 */
-	public void logAccess(String cardId, boolean allowed, String detail) {
+	public void logAccess(String cardId, boolean allowed, UserCard user, String detail) {
 		Connection con = null;
 		try {
+			logAccess.info(cardId+","+doorName+","+(allowed?"allowed":"denied")+","+detail);
 			log.info(cardId+","+doorName+","+(allowed?"allowed":"denied")+","+detail);
+			if (allowed && user != null) {
+				logFriendly.info(user.getNickName()+" has entered");
+			}
 			con = DriverManager.getConnection(session.getDbUrl());
 			PreparedStatement pstmt = null;
     		pstmt = con.prepareStatement("insert into access_log (logged, card_id, action, door, detail) values (now(),?,?,?,?)");

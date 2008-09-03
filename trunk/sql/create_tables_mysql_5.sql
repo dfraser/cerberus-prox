@@ -77,6 +77,7 @@ CREATE TABLE IF NOT EXISTS `access_log` (
 CREATE TABLE IF NOT EXISTS `card` (
   `card_id` varchar(50) NOT NULL,
   `user` varchar(255) NOT NULL,
+  `nick` varchar(255) NULL,
   `after_hours` enum('N','Y') NOT NULL,
   `access_group_id` int(11) NOT NULL,
   `expires` datetime NOT NULL,
