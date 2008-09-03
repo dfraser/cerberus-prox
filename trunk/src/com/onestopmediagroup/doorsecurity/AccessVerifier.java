@@ -20,8 +20,14 @@
 
 package com.onestopmediagroup.doorsecurity;
 
-import java.sql.*;
-import java.util.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 
@@ -36,9 +42,9 @@ import org.apache.log4j.Logger;
 public class AccessVerifier {
 
 	private static Logger log = Logger.getLogger(AccessVerifier.class);
-	private static Logger logAccess = Logger.getLogger("Access");
 	private static Logger logFriendly = Logger.getLogger("Friendly");
 	 
+	
 	/**
 	 * The door identifier that we are checking access for.
 	 */
@@ -78,6 +84,7 @@ public class AccessVerifier {
 	public AccessVerifier(String doorName, Session session) {
 		this.doorName = doorName;
 		this.session = session;
+		log.debug("currently after hours: "+isAfterHours(session.getAfterHoursStart(), session.getAfterHoursEnd()));
 		try {
 			Class.forName(session.getDbDriver()).newInstance();
 		} catch (Exception e) {
@@ -194,7 +201,14 @@ public class AccessVerifier {
 	 * @return a UserCard object representing the user, or null if access was denied.
 	 */
 	public synchronized UserCard checkAccess(String cardId) {
-		return doorCache.get(cardId);
+		UserCard user = doorCache.get(cardId);
+		if (user != null) {
+			boolean currentlyAfterHours = isAfterHours(session.getAfterHoursStart(), session.getAfterHoursEnd());
+			if (currentlyAfterHours == true && user.isAfterHoursAllowed() == false) { 
+				return null;
+			}
+		}
+		return user;
 	}
 	
 	/**
@@ -228,10 +242,9 @@ public class AccessVerifier {
 	public void logAccess(String cardId, boolean allowed, UserCard user, String detail) {
 		Connection con = null;
 		try {
-			logAccess.info(cardId+","+doorName+","+(allowed?"allowed":"denied")+","+detail);
 			log.info(cardId+","+doorName+","+(allowed?"allowed":"denied")+","+detail);
 			if (allowed && user != null) {
-				logFriendly.info(user.getNickName()+" has entered");
+				logFriendly.info(user.getNickName()+" has entered.");
 			}
 			con = DriverManager.getConnection(session.getDbUrl());
 			PreparedStatement pstmt = null;
@@ -253,6 +266,47 @@ public class AccessVerifier {
 			}
 		}	
 	}
+	
+	/** 
+	 * Checks if it's after hours or not.  Assumes Saturday and Sunday are after hours.
+	 * If "after hours" has not been configured or is disabled, this will always return false.
+ 	 *
+	 * @param startTime the time at which after hours starts.  Times are an integer representing 24-hour time as HHmm.
+	 * @param endTime the time at which after hours ends.
+	 * @return true if current time falls within any TimePairs.  false otherwise.
+	 */
+	private boolean isAfterHours(int startTime, int endTime) {
+		if (!session.isAfterHoursEnabled()) {
+			log.debug("after hours is disabled, returning false");
+			return false;
+		}
+		
+		Calendar cal = Calendar.getInstance();
+		
+		if (cal.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY || cal.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY) {
+			log.debug("weekend, after hours is true");
+			return true;
+		}
+		
+		int currentTime = cal.get(Calendar.HOUR_OF_DAY) * 100 + cal.get(Calendar.MINUTE);
+		log.debug("after hours test: startime is "+startTime+" endtime is: "+endTime+" current time is: "+currentTime);
+							
+	  	if (startTime > endTime) {
+			// crossing midnight, special test
+			if ( (startTime <= currentTime && currentTime <= 2359) ||
+				 (0 <= currentTime && currentTime < endTime)) {
+				 	return true;
+			}
+		} else {
+			// simple case, not crossing midnight
+			if (currentTime >= startTime && currentTime < endTime) {
+				return true;
+			}
+		}
+	  	
+	  	return false;
+	}
+	
 	
 }
 
