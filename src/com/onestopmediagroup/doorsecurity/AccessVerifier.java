@@ -146,8 +146,8 @@ public class AccessVerifier {
     				+"WHERE card.access_group_id = door_access.access_group_id "
     				+"AND door_access.door_id = door.id "
     				+"AND door.name = ? "
-    				+"AND card.expires > now( ) "
-    				+"AND card.valid_from < now() "
+    				+"AND (card.expires is null or card.expires > now( )) "
+    				+"AND (card.valid_from is null or card.valid_from < now()) "
     				+"AND card.disabled = 'N' ");
     		pstmt.setString(1, doorName);
     		ResultSet rs = pstmt.executeQuery();
