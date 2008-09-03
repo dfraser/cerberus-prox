@@ -70,7 +70,7 @@ public class DoorController extends Thread {
 				card = cr.read();
 				if (card != null) {
 					UserCard userCard = av.checkAccess(card.getCardId());
-					if (userCard.isMagic()) {
+					if (userCard != null && userCard.isMagic()) {
 						// this is a magic card.  switch the door state.
 						boolean oldState = av.forceUnlocked;
 						av.setDefaultUnlocked(!oldState);

@@ -45,7 +45,7 @@ public class UserCard {
 	/**
 	 * Whether or not this user has after-hours access to the resource
 	 */
-	private final boolean afterHours;
+	private final boolean afterHoursAllowed;
 	
 	/**
 	 * Whether or not this user has "magic" access.
@@ -62,7 +62,7 @@ public class UserCard {
 	protected UserCard(String realName, String nickName, boolean afterHours, boolean magic) {
 		this.realName = realName;
 		this.nickName = nickName;
-		this.afterHours = afterHours;
+		this.afterHoursAllowed = afterHours;
 		this.magic = magic;
 	}
 
@@ -74,8 +74,8 @@ public class UserCard {
 		return nickName;
 	}
 
-	public boolean isAfterHours() {
-		return afterHours;
+	public boolean isAfterHoursAllowed() {
+		return afterHoursAllowed;
 	}
 
 	public boolean isMagic() {

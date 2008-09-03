@@ -11,11 +11,14 @@ import java.util.Properties;
 public class Session {
 
 	private final Map<String, DoorController> doorControllers = new HashMap<String, DoorController>();
-	private final Boolean rpcServerEnabled;
+	private final boolean rpcServerEnabled;
 	private final int rpcListenPort;
 	private final int cacheReloadSeconds;
 	private final String dbUrl;
 	private final String dbDriver;
+	private final int afterHoursStart;
+	private final int afterHoursEnd;
+	private final boolean afterHoursEnabled;
 	
 
 	public Session() throws IOException {
@@ -50,6 +53,24 @@ public class Session {
 			cacheReloadSeconds = 120; // reasonable default
 		}		
 		
+		boolean tmpAfterHoursEnabled = true;
+		if (properties.getProperty("afterHoursStart") != null) {
+			afterHoursStart = Integer.parseInt(properties.getProperty("afterHoursStart"));
+		} else {
+			afterHoursStart = 0;
+			tmpAfterHoursEnabled = false;
+		}		
+
+		if (properties.getProperty("afterHoursStart") != null) {
+			afterHoursEnd = Integer.parseInt(properties.getProperty("afterHoursEnd"));
+		} else {
+			afterHoursEnd = 0;
+			tmpAfterHoursEnabled = false;
+		}		
+		
+		this.afterHoursEnabled = tmpAfterHoursEnabled;
+		
+		
 		Enumeration<Object> propKeys = properties.keys();
 		while (propKeys.hasMoreElements()) {
 			String keyName = (String) propKeys.nextElement();
@@ -67,6 +88,18 @@ public class Session {
 			}
 		}
 
+	}
+
+	public int getAfterHoursStart() {
+		return afterHoursStart;
+	}
+
+	public int getAfterHoursEnd() {
+		return afterHoursEnd;
+	}
+
+	public boolean isAfterHoursEnabled() {
+		return afterHoursEnabled;
 	}
 
 	public int getRpcListenPort() {
