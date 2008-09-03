@@ -22,6 +22,8 @@ This table represents the relationship between doors and access groups.  To give
 
 This table represents the authorized users of the system.  Each user has a `card_id` in the format `<premise code>-<card code>`.  You can enter the user's name, a start date, and an expiry date for your convenience.  The 'disabled' field will disable a card (disallow access) without removing it from the database.  The `magic` field will create a "magic" card, which can be used to toggle the locked/unlocked state of a door.
 
+If the expiry date for a card is NULL, the card will be valid forever in the future.  If the valid_from for a card is NULL, the card will be valid forever in the past.
+
 To find the `card_id` of an unknown card, you can present it to a reader and then take a look at the end of the log file or the `access_log` table in the database.
 
 ==Access_Log Table==
