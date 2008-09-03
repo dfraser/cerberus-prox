@@ -69,19 +69,19 @@ public class DoorController extends Thread {
 			try {
 				card = cr.read();
 				if (card != null) {
-					AccessInfo ai = av.checkAccess(card.getCardId());
-					if (ai.isMagic()) {
+					UserCard userCard = av.checkAccess(card.getCardId());
+					if (userCard.isMagic()) {
 						// this is a magic card.  switch the door state.
 						boolean oldState = av.forceUnlocked;
 						av.setDefaultUnlocked(!oldState);
-						av.logAccess(card.getCardId(), true, "magic card unlocked state = "+av.forceUnlocked+" (was "+oldState+")");
+						av.logAccess(card.getCardId(), true, userCard, "magic card unlocked state = "+av.forceUnlocked+" (was "+oldState+")");
 						cr.notifyBeep();
 					} else {
-						if (ai.isAllowed()) {
+						if (userCard != null) {
 							if (!av.forceUnlocked) {
 								cr.openDoor(4);
 							}
-							av.logAccess(card.getCardId(), true, "");
+							av.logAccess(card.getCardId(), true, userCard, "");
 						} else {
 							cr.errorBeep();
 							try {
@@ -91,7 +91,7 @@ public class DoorController extends Thread {
 								return;
 							}
 							log.info(card.getCardId()+","+name+",access denied");
-							av.logAccess(card.getCardId(), false, "");
+							av.logAccess(card.getCardId(), false, null, "");
 						}
 					}
 				} else {

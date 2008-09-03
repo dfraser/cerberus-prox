@@ -24,12 +24,28 @@
  */
 package com.onestopmediagroup.doorsecurity;
 
-public class AccessInfo {
+/**
+ * Bean to represent data from Card table in the database.
+ * 
+ * @author Dan Fraser
+ *
+ */
+public class UserCard {
 
 	/**
-	 * Whether or not access to the specific resource has been granted.
+	 * The full, real name of the card's owner.
 	 */
-	private final boolean allowed;
+	private final String realName;
+	
+	/**
+	 * The nickname or username of the card's owner
+	 */
+	private final String nickName;
+	
+	/**
+	 * Whether or not this user has after-hours access to the resource
+	 */
+	private final boolean afterHours;
 	
 	/**
 	 * Whether or not this user has "magic" access.
@@ -43,17 +59,29 @@ public class AccessInfo {
 	 * @param allowed whether or not access has been granted
 	 * @param magic whether or not the user has "magic" access
 	 */
-	protected AccessInfo(boolean allowed, boolean magic) {
-		this.allowed = allowed;
+	protected UserCard(String realName, String nickName, boolean afterHours, boolean magic) {
+		this.realName = realName;
+		this.nickName = nickName;
+		this.afterHours = afterHours;
 		this.magic = magic;
 	}
 
-	public boolean isAllowed() {
-		return allowed;
+	public String getRealName() {
+		return realName;
+	}
+
+	public String getNickName() {
+		return nickName;
+	}
+
+	public boolean isAfterHours() {
+		return afterHours;
 	}
 
 	public boolean isMagic() {
 		return magic;
 	}
+
+	
 
 }
