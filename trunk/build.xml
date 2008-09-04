@@ -23,7 +23,7 @@
 
 		<javac debug="true" srcdir="${src}" destdir="${build}" target="1.5">
 			<classpath>
-				<fileset dir="lib">
+				<fileset dir="${lib}">
 					<include name="**/*.jar"/>
 				</fileset>
 			</classpath>
@@ -46,6 +46,8 @@
 	<target name="tarball" depends="jar" description="Creates the distribution tarball">
 		<copy file="log4j.properties" todir="${dist}/cerberus-prox-${cerberus-prox.version}/" />
 		<copy file="COPYING" todir="${dist}/cerberus-prox-${cerberus-prox.version}/" />
+		<copy file="HISTORY" todir="${dist}/cerberus-prox-${cerberus-prox.version}/" />
+		<copy file="UPGRADING" todir="${dist}/cerberus-prox-${cerberus-prox.version}/" />
 		<copy file="doorsystem.properties" todir="${dist}/cerberus-prox-${cerberus-prox.version}/" />
 		<mkdir dir="${dist}/cerberus-prox-${cerberus-prox.version}/logs" />
 		<mkdir dir="${dist}/cerberus-prox-${cerberus-prox.version}/bin" />
