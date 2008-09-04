@@ -1,4 +1,4 @@
-#summary Upgrading Cerberus-Prox to the current release.
+#summary How to upgrade Cerberus-Prox to the current release.
 
 This file describes how to upgrade your Cerberus-Prox installation to the
 current release.
