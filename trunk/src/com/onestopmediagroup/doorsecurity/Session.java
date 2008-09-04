@@ -19,6 +19,7 @@ public class Session {
 	private final int afterHoursStart;
 	private final int afterHoursEnd;
 	private final boolean afterHoursEnabled;
+	private final boolean friendlyLogRealName;
 	
 
 	public Session() throws IOException {
@@ -71,6 +72,9 @@ public class Session {
 		this.afterHoursEnabled = tmpAfterHoursEnabled;
 		
 		
+		this.friendlyLogRealName = "user".equals(properties.getProperty("friendlyLogName"));
+
+		
 		Enumeration<Object> propKeys = properties.keys();
 		while (propKeys.hasMoreElements()) {
 			String keyName = (String) propKeys.nextElement();
@@ -88,6 +92,10 @@ public class Session {
 			}
 		}
 
+	}
+
+	public boolean isFriendlyLogRealName() {
+		return friendlyLogRealName;
 	}
 
 	public int getAfterHoursStart() {

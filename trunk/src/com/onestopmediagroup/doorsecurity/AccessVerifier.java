@@ -244,7 +244,13 @@ public class AccessVerifier {
 		try {
 			log.info(cardId+","+doorName+","+(allowed?"allowed":"denied")+","+detail);
 			if (allowed && user != null) {
-				logFriendly.info(user.getNickName()+" has entered.");
+				String name;
+				if (session.isFriendlyLogRealName()) {
+					name = user.getRealName();
+				} else {
+					name = user.getNickName();
+				}
+				logFriendly.info(name+" has entered.");
 			}
 			con = DriverManager.getConnection(session.getDbUrl());
 			PreparedStatement pstmt = null;
