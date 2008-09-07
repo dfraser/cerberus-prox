@@ -8,3 +8,4 @@ current release.
   * Update /etc/init.d/doorsystem - startup class name has changed.
   * Update cerberus-prox.jar
   * Merge new entires in doorsystem.properties with your existing configuration file.
+  * Merge new entries in log4j. properties to take advantage of the new log class.
