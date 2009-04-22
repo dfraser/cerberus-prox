@@ -52,10 +52,16 @@ public class Main {
 		PropertyConfigurator.configure("log4j.properties");
 
 		session = new Session();
+
+		LedSignWriter ledSign = new LedSignWriter();
+		AccessLogger accessLogger = new AccessLogger(session);
+		
 		log.debug("starting controller threads...");
 		// let's get going!
 		for (Iterator<DoorController> dcIter = session.getDoorControllers().values().iterator(); dcIter.hasNext();) {
 			DoorController dc = (DoorController) dcIter.next();
+			dc.addDoorAccessListener(ledSign);
+			dc.addDoorAccessListener(accessLogger);
 			dc.start();
 		}
 		
