@@ -20,7 +20,7 @@ public class Session {
 	private final int afterHoursEnd;
 	private final boolean afterHoursEnabled;
 	private final boolean friendlyLogRealName;
-	
+	private final boolean useLedSign;
 
 	public Session() throws IOException {
 		
@@ -74,6 +74,7 @@ public class Session {
 		
 		this.friendlyLogRealName = "user".equals(properties.getProperty("friendlyLogName"));
 
+		this.useLedSign = "true".equals(properties.getProperty("useLedSign"));
 		
 		Enumeration<Object> propKeys = properties.keys();
 		while (propKeys.hasMoreElements()) {
@@ -133,6 +134,10 @@ public class Session {
 	
 	public String getDbDriver() {
 		return dbDriver;
+	}
+	
+	public boolean isUseLedSign() {
+		return useLedSign;
 	}
 	
 }
