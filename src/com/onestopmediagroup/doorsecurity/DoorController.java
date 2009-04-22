@@ -20,6 +20,10 @@
 
 package com.onestopmediagroup.doorsecurity;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 
@@ -36,12 +40,13 @@ public class DoorController extends Thread {
 
 	private static Logger log = Logger.getLogger(DoorController.class);
 	private final AccessVerifier av;
-	private final String name;
+	private final String doorName;
 	private final CardReader cr;
 	
 	private final int pollInterval = 5000; // millis
 	private long lastPollTime;
 	private boolean triggerOpen;
+	private List<DoorAccessListener> listeners = new ArrayList<DoorAccessListener>();
 
 	/**
 	 * Creates a new DoorController thread.
@@ -51,10 +56,24 @@ public class DoorController extends Thread {
 	 * @param dbUrl the JDBC url used to connect to the database.
 	 */
 	public DoorController(RS232SerialPort port, String name, Session session) {
-		this.name = name;
+		this.doorName = name;
 		this.cr = new CardReader(port);
 		this.av = new AccessVerifier(name, session);
 		port.setRxTimeout(1000);
+	}
+	
+	public void addDoorAccessListener(DoorAccessListener listener) {
+		if (listener != null) {
+			listeners.add(listener);
+		}
+	}
+	
+	public void removeDoorAccessListener(DoorAccessListener listener) {
+		listeners.remove(listener);
+	}
+	
+	public List<DoorAccessListener> getListeners() {
+		return Collections.unmodifiableList(listeners);
 	}
 	
 	/**
@@ -63,25 +82,26 @@ public class DoorController extends Thread {
 	@Override
 	public void run() {
 		super.run();
-		log.debug("Controller for door '"+name+"' starting.");
+		log.debug("Controller for door '"+doorName+"' starting.");
 		while (!isInterrupted()) {
 			HIDCard card;
 			try {
 				card = cr.read();
 				if (card != null) {
+					boolean allowed = false;
 					UserCard userCard = av.checkAccess(card.getCardId());
 					if (userCard != null && userCard.isMagic()) {
 						// this is a magic card.  switch the door state.
 						boolean oldState = av.forceUnlocked;
 						av.setDefaultUnlocked(!oldState);
-						av.logAccess(card.getCardId(), true, userCard, "magic card unlocked state = "+av.forceUnlocked+" (was "+oldState+")");
 						cr.notifyBeep();
+						allowed = true;
 					} else {
 						if (userCard != null) {
 							if (!av.forceUnlocked) {
 								cr.openDoor(4);
 							}
-							av.logAccess(card.getCardId(), true, userCard, "");
+							allowed = true;
 						} else {
 							cr.errorBeep();
 							try {
@@ -90,9 +110,18 @@ public class DoorController extends Thread {
 								// we should exit if interrupted
 								return;
 							}
-							log.info(card.getCardId()+","+name+",access denied");
-							av.logAccess(card.getCardId(), false, null, "");
+							log.info(card.getCardId()+","+doorName+",access denied");
+							allowed = false;
 						}
+					}
+					for (Iterator<DoorAccessListener> iterator = listeners.iterator(); iterator.hasNext();) {
+						DoorAccessListener listener = iterator.next();
+						 try {							 
+							 listener.doorActionEvent(new DoorAccessEvent(this,card.getCardId(),userCard,allowed,doorName)); 
+						 } catch (RuntimeException e) {
+						     iterator.remove();
+						 }
+
 					}
 				} else {
 					// unlock the door if we got a trigger
