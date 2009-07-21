@@ -102,4 +102,4 @@ Everything will work perfectly the first time.
 
 This is a complex system with a lot of moving parts, so it probably won't work for you the first time.  Don't be alarmed.  We will help you through it.
 
-Start by editing /etc/init.d/doorsystem and adding '-debug' to the jsvc command line in the start() section.  Try the startup again, and this time you will get much more debug output.  This will show you if you have any problems with rxtx, missing libraries, or that sort of thing.
+Start by editing /etc/init.d/doorsystem and adding '-debug' to the beginning of the jsvc command line in the start() section.  Try the startup again, and this time you will get much more debug output.  This will show you if you have any problems with rxtx, missing libraries, or that sort of thing.
