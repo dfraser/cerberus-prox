@@ -21,6 +21,7 @@ public class Session {
 	private final boolean afterHoursEnabled;
 	private final boolean friendlyLogRealName;
 	private final boolean useLedSign;
+	private final String ledSignServiceUrl;
 
 	public Session() throws IOException {
 		
@@ -76,6 +77,8 @@ public class Session {
 
 		this.useLedSign = "true".equals(properties.getProperty("useLedSign"));
 		
+		this.ledSignServiceUrl = properties.getProperty("ledSignServiceUrl");
+		
 		Enumeration<Object> propKeys = properties.keys();
 		while (propKeys.hasMoreElements()) {
 			String keyName = (String) propKeys.nextElement();
@@ -93,6 +96,10 @@ public class Session {
 			}
 		}
 
+	}
+
+	public String getLedSignServiceUrl() {
+		return ledSignServiceUrl;
 	}
 
 	public boolean isFriendlyLogRealName() {
