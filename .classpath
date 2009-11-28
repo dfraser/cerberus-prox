@@ -3,5 +3,12 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Cerberus"/>
+	<classpathentry kind="lib" path="lib/commons-daemon.jar"/>
+	<classpathentry kind="lib" path="lib/jetty-6.1.11.jar"/>
+	<classpathentry kind="lib" path="lib/jetty-util-6.1.11.jar"/>
+	<classpathentry kind="lib" path="lib/log4j-1.2.15.jar"/>
+	<classpathentry kind="lib" path="lib/servlet-api-2.5-6.1.11.jar"/>
+	<classpathentry kind="lib" path="lib/xmlrpc-1.1.jar"/>
+	<classpathentry kind="lib" path="lib/RXTXcomm.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

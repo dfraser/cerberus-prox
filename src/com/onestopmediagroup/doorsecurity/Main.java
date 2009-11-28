@@ -53,7 +53,7 @@ public class Main {
 
 		session = new Session();
 
-		LedSignWriter ledSign = new LedSignWriter();
+		LedSignWriter ledSign = new LedSignWriter(session.getLedSignServiceUrl());
 		AccessLogger accessLogger = new AccessLogger(session);
 		
 		log.debug("starting controller threads...");
