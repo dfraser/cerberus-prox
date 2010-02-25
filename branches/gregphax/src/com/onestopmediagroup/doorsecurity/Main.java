@@ -49,18 +49,27 @@ public class Main {
 	 */
 	public void start() throws Exception {
 
+		LedSignWriter ledSign = null;
+
 		PropertyConfigurator.configure("log4j.properties");
 
 		session = new Session();
 
-		LedSignWriter ledSign = new LedSignWriter(session.getLedSignServiceUrl());
+		if (session.isUseLedSign())
+		{
+			log.debug("using led sign, initializing listener");
+			ledSign = new LedSignWriter(session.getLedSignServiceUrl());
+		} else {
+			log.debug("not using sign");
+		}
+
 		AccessLogger accessLogger = new AccessLogger(session);
 		
 		log.debug("starting controller threads...");
 		// let's get going!
 		for (Iterator<DoorController> dcIter = session.getDoorControllers().values().iterator(); dcIter.hasNext();) {
 			DoorController dc = (DoorController) dcIter.next();
-			dc.addDoorAccessListener(ledSign);
+			if (ledSign != null) { dc.addDoorAccessListener(ledSign); }
 			dc.addDoorAccessListener(accessLogger);
 			dc.start();
 		}
