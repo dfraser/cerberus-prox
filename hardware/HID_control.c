@@ -2,6 +2,7 @@
  * Cerberus-Prox HID/Strike Board Firmware
  * 
  * Copyright 2008 Andrew Kilpatrick
+ * Copyright 2009 William Lewis
  *
  * This file is part of Cerberus-Prox.
  *
@@ -43,6 +44,8 @@
  *             - A = beep status (1 = on, 0 = off)
  *			   - B = green LED change status (1 = on, 0 = off)
  *			   - C = strike status (1 = open, 0 = closed)
+ *			   The status will also be followed by an iXX message
+ *			   even if the inputs have not changed.
  *
  *  - H		- HID card data
  *			  - byte 0 = 'H'
@@ -50,6 +53,12 @@
  *			    where: p = odd parity bit of dddd
  *				       dddd = 8, 4, 2, 1 card data
  *            - byte n + 1 = 0x0a (newline)
+ *
+ *  - i     - Input status
+ *            - byte 0 = 'i'
+ *            - byte 1 = pins (B'001d dddd')
+ *            - byte 2 = pins, inverted (B'001d dddd')
+ *            - byte 3 = 0x0a (newline)
  */
 #include <system.h>
 
@@ -77,6 +86,7 @@
 #define GPIO_2 portb.5
 #define GPIO_3 portb.6
 #define GPIO_4 portb.7
+#define GPIO_MASK 0xF8
 
 // receiver stuff
 #define RX_CMD 0
@@ -102,6 +112,10 @@ unsigned char strike_timeout;
 #define MAX_HID 64
 unsigned char hid_data[64];
 
+// GPIO input debounce stuff
+unsigned char gpio_debounced, debounce_A, debounce_B, debounce_C;
+#define GPIO_DIRTY (1 << 0)  // Steal bit 0 for use as dirty flag
+
 // function prototypes
 void rs232_rx(unsigned char);
 void rs232_tx(unsigned char);
@@ -110,13 +124,15 @@ void process_rx_cmd(void);
 void send_error(void);
 void send_ok(void);
 void read_hid(void);
+void send_inputs(void);
 
 
 /*
  * Main.
  */
 void main() {
-	// set up the WDT timeout
+	// set up the WDT timeout (1:128 prescaler)
+	// enable RBPU
 	option_reg = 0x0f;
 
 	// set up I/O
@@ -153,6 +169,13 @@ void main() {
 	// reset the transmitter
 	tx_in_p = 0;
 	tx_out_p = 0;
+	
+	// debounce state
+	gpio_debounced = portb & GPIO_MASK;
+	gpio_debounced |= GPIO_DIRTY;
+	debounce_A = 0;
+	debounce_B = 0;
+	debounce_C = 0;
 	
 	// bootup message
 	rs232_tx('M');
@@ -205,6 +228,51 @@ void main() {
 		if(HID_DATA == 0) {
 			read_hid();
 		}
+		
+		// general purpose inputs
+		{
+            // This debounce algorithm is based on Scott Dattalo's clever
+            // "vertical counter" bitslice saturating arithmetic scheme
+            // http://www.dattalo.com/technical/software/pic/vertcnt.html
+		
+		    // Increment all counters
+		    // (to understand this, look at Dattalo's Karnaugh maps & algebra)
+		    // (this is his counter_6t translated back to C code)
+		    debounce_B ^= debounce_C;
+		    debounce_B |= debounce_A;
+		    debounce_C = debounce_A | ~( debounce_C );
+		    debounce_A |= ~(debounce_B | debounce_C);
+		    
+            unsigned char changes = ( portb ^ gpio_debounced ) & GPIO_MASK;
+
+            // For any pins that are not currently different from their
+            // debounced state, reset their counters to 0
+            debounce_A &= changes;
+            debounce_B &= changes;
+            debounce_C &= changes;
+		    
+		    // Any counters which have reached their maximum value
+		    // indicate a pin which has settled down to a state
+		    // other than its debounced state
+		    changes = (debounce_A&debounce_B&debounce_C);
+		    
+		    if (changes) {
+		        // Incorporate the changed bits in our debounced state
+		        // (note that it is impossible for the dirty-flag bit of changes
+		        // to be 1 here because we masked it off when reading from portb)
+		        gpio_debounced ^= changes;
+		        // Set the dirty flag
+		        gpio_debounced |= GPIO_DIRTY;
+		    }
+        }
+		    
+		if ((gpio_debounced & GPIO_DIRTY) &&
+            // Only transmit gpio changes if the tx buffer is empty - this
+            // will keep us from overfilling our buffer if one of the
+            // inputs starts chattering.
+            tx_in_p == tx_out_p) {
+                send_inputs();
+        }
 		
 		// try to send bytes that are waiting to send
 		rs232_tx_task();
@@ -306,6 +374,7 @@ void process_rx_cmd(void) {
 		if(strike_timeout) rs232_tx('1');
 		else rs232_tx('0');
 		rs232_tx('\n');
+		send_inputs();
 	}
 }
 
@@ -349,4 +418,19 @@ void read_hid(void) {
 	}
  	rs232_tx('\n');
 }
+
+/*
+ * Report the state of the GPIO pins
+ */
+void send_inputs(void) {
+    unsigned char ch = ( gpio_debounced >> 3 ) | 0x20;
+	    
+ 	rs232_tx('i');
+ 	rs232_tx(ch);
+    rs232_tx(ch ^ 0x1F);
+    rs232_tx('\n');
+        
+    gpio_debounced &= ~ GPIO_DIRTY;
+}
+
 
