@@ -37,7 +37,7 @@ public class AccessLogger implements DoorAccessListener {
 					name = user.getNickName();
 				}
 				logFriendly.info(name+" has entered.");
-			} else {
+			} else if (session.isFriendlyLogBogus()) {
 				logFriendly.info("Unauthorized card: "+cardId);
 			}
 			con = DriverManager.getConnection(session.getDbUrl());

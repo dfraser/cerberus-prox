@@ -20,6 +20,7 @@ public class Session {
 	private final int afterHoursEnd;
 	private final boolean afterHoursEnabled;
 	private final boolean friendlyLogRealName;
+	private final boolean friendlyLogBogus;
 	private final boolean useLedSign;
 	private final String ledSignServiceUrl;
 
@@ -74,6 +75,8 @@ public class Session {
 		
 		
 		this.friendlyLogRealName = "user".equals(properties.getProperty("friendlyLogName"));
+		
+		this.friendlyLogBogus = "true".equals(properties.getProperty("friendlyLogBogus","true"));
 
 		this.useLedSign = "true".equals(properties.getProperty("useLedSign"));
 		
@@ -133,6 +136,10 @@ public class Session {
 		return ledSignServiceUrl;
 	}
 
+	public boolean isFriendlyLogBogus() {
+		return friendlyLogBogus;
+	}
+	
 	public boolean isFriendlyLogRealName() {
 		return friendlyLogRealName;
 	}
