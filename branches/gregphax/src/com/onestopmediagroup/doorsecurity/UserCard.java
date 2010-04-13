@@ -59,6 +59,7 @@ public class UserCard {
 	 * @param allowed whether or not access has been granted
 	 * @param magic whether or not the user has "magic" access
 	 */
+	/** TODO allowed is invalid above */
 	protected UserCard(String realName, String nickName, boolean afterHours, boolean magic) {
 		this.realName = realName;
 		this.nickName = nickName;

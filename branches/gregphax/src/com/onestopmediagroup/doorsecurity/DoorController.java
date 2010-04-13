@@ -55,6 +55,7 @@ public class DoorController extends Thread {
 	 * @param name the name of the door to control (from database door table)
 	 * @param dbUrl the JDBC url used to connect to the database.
 	 */
+	/** TODO: dbUrl is invalid above */
 	public DoorController(RS232SerialPort port, String name, Session session) {
 		this.doorName = name;
 		this.cr = new RS232CardReader(port);
@@ -68,7 +69,7 @@ public class DoorController extends Thread {
 	 * @param inFile the filename to read input from (pretending to be a cerberus-prox board)
 	 * @param outFile the filename to write output to (commands to send to a cerberus-prox board) 
 	 * @param name the name of the door to control (from database door table)
-	 * @param session ??? TODO
+	 * @param session ??? TODO document session
 	 */
 	public DoorController(String inFile, String outFile, String name, Session session) throws IOException {
 		this.doorName = name;
