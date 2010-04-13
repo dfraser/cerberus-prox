@@ -90,9 +90,40 @@ public class Session {
 					throw new IllegalArgumentException(
 							"expected property (name" + portNum + ") not found");
 				}
-				RS232SerialPort comPort = new RS232SerialPort(port, 9600, 1000);
-				DoorController dc = new DoorController(comPort, doorName, this);
-				doorControllers.put(doorName, dc);
+				
+				// look for a typeN key, default to "serial" if none
+				String portType = properties.getProperty("type" + portNum, "serial");
+				
+				if (portType.equals("serial"))
+				{
+					// this is the previous revision code -- init a DoorController talking
+					// to the serial port
+					RS232SerialPort comPort = new RS232SerialPort(port, 9600, 1000);
+					DoorController dc = new DoorController(comPort, doorName, this);
+					doorControllers.put(doorName, dc);					
+				} 
+				else if (portType.equals("file"))
+				{
+					// new: if type is "file", init a DoorController using those files
+					String inFileName = properties.getProperty("infile" + portNum);
+					String outFileName = properties.getProperty("outfile" + portNum);
+					
+					if (inFileName == null || outFileName == null)
+					{
+						throw new IllegalArgumentException(
+								"type \"file\" requires infile"+portNum
+								+" and outfile"+portNum
+								+" properties");
+					}
+					
+					DoorController dc = new DoorController(inFileName, outFileName, doorName, this);
+					doorControllers.put(doorName, dc);
+				}
+				else
+				{
+					throw new IllegalArgumentException(
+							"unsupported doortype for "+doorName+" "+portType);
+				}
 			}
 		}
 
