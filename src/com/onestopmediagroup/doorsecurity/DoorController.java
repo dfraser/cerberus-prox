@@ -57,9 +57,23 @@ public class DoorController extends Thread {
 	 */
 	public DoorController(RS232SerialPort port, String name, Session session) {
 		this.doorName = name;
-		this.cr = new CardReader(port);
+		this.cr = new RS232CardReader(port);
 		this.av = new AccessVerifier(name, session);
 		port.setRxTimeout(1000);
+	}
+	
+	/**
+	 * Creates a new DoorController thread.
+	 * 
+	 * @param inFile the filename to read input from (pretending to be a cerberus-prox board)
+	 * @param outFile the filename to write output to (commands to send to a cerberus-prox board) 
+	 * @param name the name of the door to control (from database door table)
+	 * @param session ??? TODO
+	 */
+	public DoorController(String inFile, String outFile, String name, Session session) throws IOException {
+		this.doorName = name;
+		this.cr = new FakeCardReader(inFile, outFile);
+		this.av = new AccessVerifier(name, session);
 	}
 	
 	public void addDoorAccessListener(DoorAccessListener listener) {
