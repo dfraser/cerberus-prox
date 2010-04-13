@@ -81,6 +81,7 @@ public class AccessVerifier {
 	 * @param dbUrl the JDBC user for our SQL database
 	 * @param dbDriver the JDBC driver classname for our SQL database
 	 */
+	/** TODO: dbUrl and dbDriver are invalid above */
 	public AccessVerifier(String doorName, Session session) {
 		this.doorName = doorName;
 		this.session = session;

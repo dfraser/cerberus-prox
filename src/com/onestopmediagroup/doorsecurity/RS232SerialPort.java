@@ -56,6 +56,7 @@ public class RS232SerialPort {
 	 * @param baudrate the baud rate to use in bps
 	 * @param timeout the receive timeout in ms
 	 */
+	/** TODO: baudrate is invalid above */
 	public RS232SerialPort(String serialPortName, int baud, int timeout) throws IOException {
 		logger = Logger.getLogger(this.getClass());
 		logger.debug("setting up serial port: " + serialPortName);
@@ -201,7 +202,7 @@ public class RS232SerialPort {
 	/**
 	 * Sets the baudrate.
 	 * 
-	 * @param the baudrate in bps
+	 * @param baud the baudrate in bps
 	 * @throws SerialPortException if there is a problem setting the baud rate
 	 */
 	public void setBaudrate(int baud) throws SerialPortException {
@@ -221,7 +222,7 @@ public class RS232SerialPort {
 	/**
 	 * Sets the receive timeout.
 	 * 
-	 * @param the receive timeout in ms
+	 * @param rxTimeout the receive timeout in ms
 	 */
 	public void setRxTimeout(int rxTimeout) {
 		if(this.receiveTimeout == rxTimeout || rxTimeout < 0) {
