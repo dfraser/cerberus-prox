@@ -7,6 +7,8 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Session {
 
@@ -82,8 +84,16 @@ public class Session {
 		Enumeration<Object> propKeys = properties.keys();
 		while (propKeys.hasMoreElements()) {
 			String keyName = (String) propKeys.nextElement();
+			Pattern p = Pattern.compile("[\\d]+");
 			if (keyName.startsWith("port")) {
-				int portNum = Integer.parseInt(keyName.substring(4));
+				Matcher m = p.matcher(keyName);
+				int portNum;
+				if (m.find()) {
+				    portNum = Integer.parseInt(m.group(0));
+				} else {
+				    throw new IllegalArgumentException(
+				            "port number value not found in " + keyName);
+				}
 				String port = properties.getProperty(keyName);
 				String doorName = properties.getProperty("name" + portNum);
 				if (doorName == null) {
