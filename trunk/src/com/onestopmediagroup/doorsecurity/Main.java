@@ -53,14 +53,20 @@ public class Main {
 
 		session = new Session();
 
-		LedSignWriter ledSign = new LedSignWriter(session.getLedSignServiceUrl());
+		// Create the LedSignWriter object and set ti to null
+		LedSignWriter ledSign = null;
+		if(session.isUseLedSign()) { // Check to see if we're using the led sign
+			ledSign = new LedSignWriter(session.getLedSignServiceUrl()); // If so, instantiate the object
+		}
 		AccessLogger accessLogger = new AccessLogger(session);
-		
+
 		log.debug("starting controller threads...");
 		// let's get going!
 		for (Iterator<DoorController> dcIter = session.getDoorControllers().values().iterator(); dcIter.hasNext();) {
 			DoorController dc = (DoorController) dcIter.next();
-			dc.addDoorAccessListener(ledSign);
+			if(session.isUseLedSign()) { // Check to see if we're using the led sign
+				dc.addDoorAccessListener(ledSign); // If so, register the class to the event
+			}
 			dc.addDoorAccessListener(accessLogger);
 			dc.start();
 		}
