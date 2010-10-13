@@ -63,7 +63,7 @@ public class AccessVerifier {
 	/**
 	 * Whether or not the current door is being forced unlocked by 
 	 * database configuration.
-	 */
+	 */ 
 	boolean forceUnlocked = false;
 	
 	/**
@@ -141,14 +141,32 @@ public class AccessVerifier {
 			log.trace("loading cache for door: "+doorName);
 			con = DriverManager.getConnection(session.getDbUrl());
 			PreparedStatement pstmt = null;
-    		pstmt = con.prepareStatement("SELECT card_id, user, nick, after_hours, magic "
-    				+"FROM card, door_access, door "
-    				+"WHERE card.access_group_id = door_access.access_group_id "
-    				+"AND door_access.door_id = door.id "
-    				+"AND door.name = ? "
-    				+"AND (card.expires is null or card.expires > now( )) "
-    				+"AND (card.valid_from is null or card.valid_from < now()) "
-    				+"AND card.disabled = 'N' ");
+    		String sql = "SELECT "+
+                            "	card.card_id, "+
+                            "	card.user, "+
+                            "	card.nick, "+
+                            "	card.after_hours, "+
+                            "	card.magic "+
+                            "FROM "+
+                            "	card, "+
+                            "	card_group, "+
+                            "	door_access, "+
+                            "	door "+
+                            "WHERE "+
+                            "	card_group.card_id = card.card_id "+
+                            "AND "+
+                            "	card_group.access_group_id = door_access.access_group_id "+
+                            "AND "+
+                            "	door_access.door_id = door.id "+
+                            "AND "+
+                            "	door.name = ? "+
+                            "AND "+
+                            "	(card.expires is null or card.expires > now( )) "+
+                            "AND "+
+                            "	(card.valid_from is null or card.valid_from < now()) "+
+                            "AND "+
+                            "	card.disabled = 'N'";
+                pstmt = con.prepareStatement(sql);
     		pstmt.setString(1, doorName);
     		ResultSet rs = pstmt.executeQuery();
     		while (rs.next()) {
