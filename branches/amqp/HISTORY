@@ -1,0 +1,16 @@
+==Cerberus-Prox Revision History==
+
+===1.2=== 
+* Reduced minimum external library dependencies for runtime.
+* Improve API to provide more information from "card" table.
+* Added separate "Friendly" logger
+* Allow and define behaviour of NULL expiry and NULL valid_from fields.
+* Added initial implementation of "after hours" access control.
+
+===1.1===
+* Added configuration to disable xml-rpc server.
+* Added configuration to adjust cache refresh interval.
+* Cleaned up configuration code to use Session class.
+
+===1.0=== 
+* Initial Release

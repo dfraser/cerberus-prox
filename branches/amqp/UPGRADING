@@ -1,0 +1,10 @@
+This file describes how to upgrade your cerberus-prox installation to the
+current release.
+
+==From 1.1==
+
+* Run upgrade_from_1.1.sql script on the database.
+* Update /etc/init.d/doorsystem - startup class name has changed.
+* Update cerberus-prox.jar
+* Merge new entires in doorsystem.properties with your existing configuration file.
+
