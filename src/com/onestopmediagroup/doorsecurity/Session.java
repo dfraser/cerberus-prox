@@ -10,6 +10,8 @@ import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.rabbitmq.client.AMQP.Basic.Get;
+
 public class Session {
 
 	private final Map<String, DoorController> doorControllers = new HashMap<String, DoorController>();
@@ -24,6 +26,16 @@ public class Session {
 	private final boolean friendlyLogRealName;
 	private final boolean useLedSign;
 	private final String ledSignServiceUrl;
+	
+	private final boolean amqpEnabled;
+	private final String amqpHost;
+	private final int amqpPort;
+	private final String amqpVirtualhost;
+	private final String amqpUsername;
+	private final String amqpPassword;
+	private final String amqpExchange;
+	private final String amqpRoutingKey;
+	private final String amqpQueue;
 
 	public Session() throws IOException {
 		
@@ -80,6 +92,21 @@ public class Session {
 		this.useLedSign = "true".equals(properties.getProperty("useLedSign"));
 		
 		this.ledSignServiceUrl = properties.getProperty("ledSignServiceUrl");
+
+		
+		if (properties.getProperty("amqp.enabled") != null && Integer.parseInt(properties.getProperty("amqp.enabled")) == 1) {
+			amqpEnabled = true;
+		} else {
+			amqpEnabled = false;
+		}
+		this.amqpExchange = properties.getProperty("amqp.exchangeName");
+		this.amqpQueue = properties.getProperty("amqp.queueName");
+		this.amqpHost = properties.getProperty("amqp.host");
+		this.amqpUsername = properties.getProperty("amqp.username");
+		this.amqpPassword = properties.getProperty("amqp.password");
+		this.amqpPort = Integer.parseInt(properties.getProperty("amqp.port"));
+		this.amqpRoutingKey = properties.getProperty("amqp.routingKey");
+		this.amqpVirtualhost = properties.getProperty("amqp.virtualHost");
 		
 		Enumeration<Object> propKeys = properties.keys();
 		while (propKeys.hasMoreElements()) {
@@ -139,7 +166,6 @@ public class Session {
 	public Map<String, DoorController> getDoorControllers() {
 		return Collections.unmodifiableMap(doorControllers);
 	}
-	
 		
 	public int getCacheReloadSeconds() {
 		return cacheReloadSeconds;
@@ -157,4 +183,39 @@ public class Session {
 		return useLedSign;
 	}
 	
+	public String getAmqpExchange() {
+		return amqpExchange;
+	}
+	
+	public String getAmqpPassword() {
+		return amqpPassword;
+	}
+	
+	public String getAmqpHost() {
+		return amqpHost;
+	}
+	
+	public int getAmqpPort() {
+		return amqpPort;
+	}
+	
+	public String getAmqpRoutingKey() {
+		return amqpRoutingKey;
+	}
+	
+	public String getAmqpUsername() {
+		return amqpUsername;
+	}
+	
+	public String getAmqpVirtualhost() {
+		return amqpVirtualhost;
+	}
+	
+	public boolean isAmqpEnabled() {
+		return amqpEnabled;
+	}
+
+	public String getAmqpQueue() {
+		return amqpQueue;
+	}
 }
