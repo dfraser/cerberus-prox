@@ -10,8 +10,6 @@ import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.rabbitmq.client.AMQP.Basic.Get;
-
 public class Session {
 
 	private final Map<String, DoorController> doorControllers = new HashMap<String, DoorController>();
