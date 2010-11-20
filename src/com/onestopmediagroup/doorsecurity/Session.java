@@ -10,6 +10,13 @@ import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+
+/**
+ * Defines the session state for the door system.  Mostly includes configuration data.
+ * 
+ * @author dfraser
+ *
+ */
 public class Session {
 
 	private final Map<String, DoorController> doorControllers = new HashMap<String, DoorController>();
@@ -25,14 +32,49 @@ public class Session {
 	private final boolean useLedSign;
 	private final String ledSignServiceUrl;
 	
+	/**
+	 * True if the AMQP subsystem is supposed to be enabled.
+	 */
 	private final boolean amqpEnabled;
+	
+	/**
+	 * The hostname for the AMQP broker
+	 */
 	private final String amqpHost;
+	
+	/**
+	 * The port number for AMQP communication
+	 */
 	private final int amqpPort;
+	
+	/** 
+	 * The virutal host path on the AMQP broker
+	 */
 	private final String amqpVirtualhost;
+	
+	/**
+	 * The username for the AMQP broker connection
+	 */
 	private final String amqpUsername;
+	
+	/**
+	 * The password for the AMQP broker connection
+	 */
 	private final String amqpPassword;
+	
+	/**
+	 * The exchange name to use on the AMQP broker
+	 */
 	private final String amqpExchange;
+	
+	/**
+	 * The routing key to be sent with the message
+	 */
 	private final String amqpRoutingKey;
+	
+	/**
+	 * The queue name on the AMQP broker
+	 */
 	private final String amqpQueue;
 
 	public Session() throws IOException {

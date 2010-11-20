@@ -8,6 +8,12 @@ import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.Channel;
 
+/**
+ * Sends door access messages to an AMQP queue via the RabbitMQ Client library.
+ * 
+ * @author dfraser
+ *
+ */
 public class AmqpSender implements DoorAccessListener {
 
 	private final Connection conn;
@@ -17,7 +23,6 @@ public class AmqpSender implements DoorAccessListener {
 	
 	private static Logger log = Logger.getLogger(AmqpSender.class);
 
-	
 	public AmqpSender(String userName, String password, String virtualHost, String hostName, int portNumber, String exchangeName, String queueName, String routingKey) throws IOException {
 		ConnectionFactory connectionFactory = new ConnectionFactory();
 		connectionFactory.setUsername(userName);
@@ -28,8 +33,7 @@ public class AmqpSender implements DoorAccessListener {
 		conn = connectionFactory.newConnection();
 		this.queueName = queueName;
 		this.routingKey = routingKey;
-		this.exchangeName = exchangeName;
-		
+		this.exchangeName = exchangeName;		
 	}
 	
 	@Override
@@ -42,7 +46,7 @@ public class AmqpSender implements DoorAccessListener {
 			channel.queueBind(queueName, exchangeName, routingKey);
 			
 			byte[] messageBodyBytes = "Hello, world!".getBytes();
-			
+	
 			channel.basicPublish(exchangeName, routingKey, null, messageBodyBytes);
 			
 		} catch (IOException e) {
