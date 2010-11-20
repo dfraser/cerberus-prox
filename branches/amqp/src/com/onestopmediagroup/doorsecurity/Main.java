@@ -53,7 +53,7 @@ public class Main {
 
 		session = new Session();
 
-		// Create the LedSignWriter object and set ti to null
+		// Create the LedSignWriter object and set it to null
 		LedSignWriter ledSign = null;
 		if(session.isUseLedSign()) { // Check to see if we're using the led sign
 			ledSign = new LedSignWriter(session.getLedSignServiceUrl()); // If so, instantiate the object
