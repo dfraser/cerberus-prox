@@ -45,7 +45,14 @@ public class AmqpSender implements DoorAccessListener {
 			channel.queueDeclare(queueName, true, false, false, null);
 			channel.queueBind(queueName, exchangeName, routingKey);
 			
-			byte[] messageBodyBytes = "Hello, world!".getBytes();
+			String message;
+			if (event.isAllowed()) {
+				message = event.getUserCard().getNickName()+" has entered";
+			} else {
+				message = event.getCardId()+" unknown hid card";
+			}
+			
+			byte[] messageBodyBytes = message.getBytes();
 	
 			channel.basicPublish(exchangeName, routingKey, null, messageBodyBytes);
 			

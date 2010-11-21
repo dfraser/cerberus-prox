@@ -22,6 +22,7 @@ package com.onestopmediagroup.doorsecurity;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -117,7 +118,7 @@ public class DoorController extends Thread {
 					for (Iterator<DoorAccessListener> iterator = listeners.iterator(); iterator.hasNext();) {
 						DoorAccessListener listener = iterator.next();
 						 try {							 
-							 listener.doorActionEvent(new DoorAccessEvent(this,card.getCardId(),userCard,allowed,doorName)); 
+							 listener.doorActionEvent(new DoorAccessEvent(this, new Date(), card.getCardId(), allowed, userCard != null, doorName, userCard.getRealName(), userCard.getNickName(), userCard.isAfterHoursAllowed(), userCard.isMagic())); 
 						 } catch (RuntimeException e) {
 						     iterator.remove();
 						 }
