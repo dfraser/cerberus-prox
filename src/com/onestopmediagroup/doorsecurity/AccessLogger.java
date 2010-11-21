@@ -7,6 +7,12 @@ import java.sql.SQLException;
 
 import org.apache.log4j.Logger;
 
+/**
+ * Class to log the door access into the database and into log4j.
+ * 
+ * @author dfraser
+ *
+ */
 public class AccessLogger implements DoorAccessListener {
 
 	private static Logger log = Logger.getLogger(DoorController.class);
@@ -24,22 +30,23 @@ public class AccessLogger implements DoorAccessListener {
 		try {
 			String doorName = event.getDoorName();
 			boolean allowed = event.isAllowed();
-			UserCard user = event.getUserCard();
+			boolean unknown = event.isUnknown();
 			String cardId = event.getCardId();
-			String detail = "";
+			String detail = event.isMagic() ? "magic card" : "";
 
 			log.info(cardId+","+doorName+","+(allowed?"allowed":"denied")+","+detail);
-			if (allowed && user != null) {
+			if (allowed && !unknown) {
 				String name;
 				if (session.isFriendlyLogRealName()) {
-					name = user.getRealName();
+					name = event.getRealName();
 				} else {
-					name = user.getNickName();
+					name = event.getNickName();
 				}
 				logFriendly.info(name+" has entered.");
 			} else {
 				logFriendly.info("Unauthorized card: "+cardId);
 			}
+			
 			con = DriverManager.getConnection(session.getDbUrl());
 			PreparedStatement pstmt = null;
 			pstmt = con.prepareStatement("insert into access_log (logged, card_id, action, door, detail) values (now(),?,?,?,?)");
@@ -56,7 +63,7 @@ public class AccessLogger implements DoorAccessListener {
 					con.close();
 				}
 			} catch (SQLException e) {
-				// nothing to do
+				log.error("database error closing connection",e);
 			}
 		}	
 	}

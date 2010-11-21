@@ -19,7 +19,7 @@ public class LedSignWriter implements DoorAccessListener {
 		log.debug("led sign event gotten!");
 		String message;
 		if (event.isAllowed()) {
-			message = event.getUserCard().getNickName()+"\nhas entered";
+			message = event.getNickName()+"\nhas entered";
 		} else {
 			message = event.getCardId()+"\nunknown hid card";
 		}
