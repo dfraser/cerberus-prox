@@ -1,74 +1,87 @@
 package com.onestopmediagroup.doorsecurity;
 
 import java.util.Date;
-import java.util.EventObject;
+import javax.xml.bind.annotation.XmlRootElement;
 
-@SuppressWarnings("serial")
-public class DoorAccessEvent extends EventObject {
+@XmlRootElement(name="door_event")
+public class DoorAccessEvent {
 
 	/**
 	 * True if the access was allowed and the door was opened, false if it was denied
 	 */
-	private final boolean allowed;
+	private boolean allowed;
+	
 	/**
 	 * True if the card was unknown, false if it was found in the database
 	 */
-	private final boolean unknown;
+	private boolean unknown;
 	
 	/**
 	 * The name of the door that generated this access event
 	 */
-	private final String doorName;
+	private String doorName;
 
 	/**
 	 * The card id that was read for this event
 	 */
-	private final String cardId;
+	private String cardId;
 	
 	/**
 	 * The full, real name of the card's owner, null if card was unknown
 	 */
-	private final String realName;
+	private String realName;
 	
 	/**
 	 * The nickname or username of the card's owner, null if card was unknown
 	 */
-	private final String nickName;
-	
-	/**
-	 * Whether or not this user has after-hours access to the resource, false if card was unknown
-	 */
-	private final boolean afterHoursAllowed;
+	private String nickName;
 	
 	/**
 	 * Whether or not this user has "magic" access, false if card was unknown
 	 */
-	private final boolean magic;
+	private boolean magic;
 	
 	/**
 	 * The date and time the card was read
 	 */
-	private final Date timeRead;
+	private Date timeRead;
 
-	public DoorAccessEvent(Object source, Date timeRead, String cardId, boolean allowed, boolean unknown, String doorName, String realName, String nickName, boolean afterHoursAllowed, boolean magic) {
-		super(source);
-		this.cardId = cardId;
+	public DoorAccessEvent() {
+		
+	}
+
+	public void setAllowed(boolean allowed) {
 		this.allowed = allowed;
-		this.doorName = doorName;
-		this.afterHoursAllowed = afterHoursAllowed;
-		this.magic = magic;
-		this.nickName = nickName;
-		this.realName = realName;
-		this.unknown = unknown;
-		this.timeRead = timeRead;
 	}
 
-	@Override
-	public Object getSource() {
-		// TODO Auto-generated method stub
-		return super.getSource();
+	public void setUnknown(boolean unknown) {
+		this.unknown = unknown;
 	}
-	
+
+	public void setDoorName(String doorName) {
+		this.doorName = doorName;
+	}
+
+	public void setCardId(String cardId) {
+		this.cardId = cardId;
+	}
+
+	public void setRealName(String realName) {
+		this.realName = realName;
+	}
+
+	public void setNickName(String nickName) {
+		this.nickName = nickName;
+	}
+
+	public void setMagic(boolean magic) {
+		this.magic = magic;
+	}
+
+	public void setTimeRead(Date timeRead) {
+		this.timeRead = new Date(timeRead.getTime());
+	}
+
 	public Date getTimeRead() {
 		// date is mutable, return defensive copy
 		return new Date(timeRead.getTime());
@@ -76,10 +89,6 @@ public class DoorAccessEvent extends EventObject {
 	
 	public boolean isUnknown() {
 		return unknown;
-	}
-	
-	public boolean isAfterHoursAllowed() {
-		return afterHoursAllowed;
 	}
 	
 	public boolean isMagic() {

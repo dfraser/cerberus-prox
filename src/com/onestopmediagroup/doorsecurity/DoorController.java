@@ -115,14 +115,24 @@ public class DoorController extends Thread {
 							allowed = false;
 						}
 					}
+					
+					Date timeRead = new Date();
 					for (Iterator<DoorAccessListener> iterator = listeners.iterator(); iterator.hasNext();) {
-						DoorAccessListener listener = iterator.next();
+						 DoorAccessListener listener = iterator.next();
 						 try {							 
-							 listener.doorActionEvent(new DoorAccessEvent(this, new Date(), card.getCardId(), allowed, userCard != null, doorName, userCard.getRealName(), userCard.getNickName(), userCard.isAfterHoursAllowed(), userCard.isMagic())); 
+							 DoorAccessEvent dae = new DoorAccessEvent();
+							 dae.setAllowed(allowed);
+							 dae.setUnknown(userCard != null);
+							 dae.setCardId(card.getCardId());
+							 dae.setDoorName(doorName);
+							 dae.setMagic(userCard.isMagic());
+							 dae.setNickName(userCard.getNickName());
+							 dae.setRealName(userCard.getRealName());
+							 dae.setTimeRead(timeRead);
+							 listener.doorActionEvent(dae); 
 						 } catch (RuntimeException e) {
 						     iterator.remove();
 						 }
-
 					}
 				} else {
 					// unlock the door if we got a trigger
