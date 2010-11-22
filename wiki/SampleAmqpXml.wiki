@@ -1,0 +1,23 @@
+#summary Sample XML for AMQP Messages
+
+{{{
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<door_event>
+   <allowed>true</allowed> 
+   <cardId>40-12345</cardId>
+   <doorName>front</doorName>
+   <magic>false</magic>
+   <nickName>Optic</nickName>
+   <realName>Dan Fraser</realName>
+   <timeRead>2010-11-21T21:59:26.529-05:00</timeRead>
+   <unknown>false</unknown>
+</door_event>
+}}}
+
+
+= Details =
+
+Add your content here.  Format your content with:
+  * Text in *bold* or _italic_
+  * Headings, paragraphs, and lists
+  * Automatic links to other wiki pages
