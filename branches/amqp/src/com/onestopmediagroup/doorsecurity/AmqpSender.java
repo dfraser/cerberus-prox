@@ -1,6 +1,11 @@
 package com.onestopmediagroup.doorsecurity;
 
 import java.io.IOException;
+import java.io.StringWriter;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 
 import org.apache.log4j.Logger;
 
@@ -45,17 +50,20 @@ public class AmqpSender implements DoorAccessListener {
 			channel.queueDeclare(queueName, true, false, false, null);
 			channel.queueBind(queueName, exchangeName, routingKey);
 			
-			String message;
-			if (event.isAllowed()) {
-				message = event.getUserCard().getNickName()+" has entered";
-			} else {
-				message = event.getCardId()+" unknown hid card";
-			}
-			
-			byte[] messageBodyBytes = message.getBytes();
+			try {
+				JAXBContext context = JAXBContext.newInstance(event.getClass());
+				Marshaller marshaller = context.createMarshaller();
 	
-			channel.basicPublish(exchangeName, routingKey, null, messageBodyBytes);
+				StringWriter sw = new StringWriter();
+				marshaller.marshal(event,sw);
+				System.out.println(sw.toString());
+				byte[] messageBodyBytes = sw.toString().getBytes();
+				sw.close();
 			
+				channel.basicPublish(exchangeName, routingKey, null, messageBodyBytes);
+			} catch (JAXBException e) {
+				log.error("error marshalling door event to xml",e);
+			}
 		} catch (IOException e) {
 			log.error("error sending door access amqp message",e);
 		} finally {
