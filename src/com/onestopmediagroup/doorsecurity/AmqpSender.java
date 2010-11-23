@@ -1,17 +1,13 @@
 package com.onestopmediagroup.doorsecurity;
 
 import java.io.IOException;
-import java.io.StringWriter;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
 
 import org.apache.log4j.Logger;
 
+import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
-import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.MessageProperties;
 
 /**
  * Sends door access messages to an AMQP queue via the RabbitMQ Client library.
@@ -22,9 +18,7 @@ import com.rabbitmq.client.Channel;
 public class AmqpSender implements DoorAccessListener {
 
 	private final Connection conn;
-	private final String queueName;
 	private final String exchangeName;
-	private final String routingKey;
 	
 	private static Logger log = Logger.getLogger(AmqpSender.class);
 
@@ -36,8 +30,6 @@ public class AmqpSender implements DoorAccessListener {
 		connectionFactory.setHost(hostName);
 		connectionFactory.setPort(portNumber);
 		conn = connectionFactory.newConnection();
-		this.queueName = queueName;
-		this.routingKey = routingKey;
 		this.exchangeName = exchangeName;		
 	}
 	
@@ -46,24 +38,22 @@ public class AmqpSender implements DoorAccessListener {
 		Channel channel = null; 
 		try {
 			channel = conn.createChannel();		
-			channel.exchangeDeclare(exchangeName, "direct", true);
-			channel.queueDeclare(queueName, true, false, false, null);
-			channel.queueBind(queueName, exchangeName, routingKey);
+//			channel.exchangeDeclare(exchangeName, "fanout");
 			
-			try {
-				JAXBContext context = JAXBContext.newInstance(event.getClass());
-				Marshaller marshaller = context.createMarshaller();
-	
-				StringWriter sw = new StringWriter();
-				marshaller.marshal(event,sw);
-				System.out.println(sw.toString());
-				byte[] messageBodyBytes = sw.toString().getBytes();
-				sw.close();
-			
-				channel.basicPublish(exchangeName, routingKey, null, messageBodyBytes);
-			} catch (JAXBException e) {
-				log.error("error marshalling door event to xml",e);
-			}
+//			try {
+//				JAXBContext context = JAXBContext.newInstance(event.getClass());
+//				Marshaller marshaller = context.createMarshaller();
+//	
+//				StringWriter sw = new StringWriter();
+//				marshaller.marshal(event,sw);
+//				System.out.println(sw.toString());
+//				byte[] messageBodyBytes = sw.toString().getBytes();
+//				sw.close();
+				byte[] messageBodyBytes = "Cows Often Say Moo!".getBytes();
+				channel.basicPublish(exchangeName, event.getDoorName(), MessageProperties.TEXT_PLAIN, messageBodyBytes);
+//			} catch (JAXBException e) {
+//				log.error("error marshalling door event to xml",e);
+//			}
 		} catch (IOException e) {
 			log.error("error sending door access amqp message",e);
 		} finally {
@@ -76,4 +66,10 @@ public class AmqpSender implements DoorAccessListener {
 			}
 		}
 	}	
+	
+	public void close() throws IOException {
+		if (conn != null) {
+			conn.close();
+		}
+	}
 }

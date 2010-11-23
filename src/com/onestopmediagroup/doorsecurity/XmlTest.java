@@ -31,13 +31,12 @@ public class XmlTest {
 		dae.setTimeRead(new Date());
 		dae.setUnknown(false);
 		
-		JAXBContext context = JAXBContext.newInstance(dae.getClass());
-		Marshaller marshaller = context.createMarshaller();
-
-		StringWriter sw = new StringWriter();
-		marshaller.marshal(dae,sw);
-		System.out.println(sw.toString());
-		sw.close();
+		Session session = new Session();
+		
+		AmqpSender as = new AmqpSender(session.getAmqpUsername(), session.getAmqpPassword(), session.getAmqpVirtualhost(), session.getAmqpHost(), session.getAmqpPort(), session.getAmqpExchange(), null, null);
+		as.doorActionEvent(dae);
+		as.close();
+		
 	}
 
 }
