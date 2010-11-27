@@ -60,12 +60,21 @@ public class Main {
 		}
 		AccessLogger accessLogger = new AccessLogger(session);
 
+		AmqpSender amqpSender = null;
+		if (session.isAmqpEnabled()) {
+			amqpSender = new AmqpSender(session.getAmqpUsername(), session.getAmqpPassword(), session.getAmqpVirtualhost(), session.getAmqpHost(), session.getAmqpPort(), session.getAmqpExchange(), session.isAmqpSendMessageAsXml());
+		}
+		
 		log.debug("starting controller threads...");
+		
 		// let's get going!
 		for (Iterator<DoorController> dcIter = session.getDoorControllers().values().iterator(); dcIter.hasNext();) {
 			DoorController dc = (DoorController) dcIter.next();
 			if(session.isUseLedSign()) { // Check to see if we're using the led sign
 				dc.addDoorAccessListener(ledSign); // If so, register the class to the event
+			}
+			if (session.isAmqpEnabled()) {
+				dc.addDoorAccessListener(amqpSender);
 			}
 			dc.addDoorAccessListener(accessLogger);
 			dc.start();
