@@ -33,7 +33,7 @@ public class XmlTest {
 		
 		Session session = new Session();
 		
-		AmqpSender as = new AmqpSender(session.getAmqpUsername(), session.getAmqpPassword(), session.getAmqpVirtualhost(), session.getAmqpHost(), session.getAmqpPort(), session.getAmqpExchange(), null, null, false);
+		AmqpSender as = new AmqpSender(session.getAmqpUsername(), session.getAmqpPassword(), session.getAmqpVirtualhost(), session.getAmqpHost(), session.getAmqpPort(), session.getAmqpExchange(), false);
 		as.doorActionEvent(dae);
 		as.close();
 		

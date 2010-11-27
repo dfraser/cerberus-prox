@@ -28,7 +28,7 @@ public class AmqpSender implements DoorAccessListener {
 	private static Logger log = Logger.getLogger(AmqpSender.class);
 	private final boolean sendAsXml;
 
-	public AmqpSender(String userName, String password, String virtualHost, String hostName, int portNumber, String exchangeName, String queueName, String routingKey, boolean sendAsXml) throws IOException {
+	public AmqpSender(String userName, String password, String virtualHost, String hostName, int portNumber, String exchangeName, boolean sendAsXml) throws IOException {
 		this.sendAsXml = sendAsXml;
 		ConnectionFactory connectionFactory = new ConnectionFactory();
 		connectionFactory.setUsername(userName);
