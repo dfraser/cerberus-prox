@@ -122,7 +122,7 @@ public class DoorController extends Thread {
 						 try {							 
 							 DoorAccessEvent dae = new DoorAccessEvent();
 							 dae.setAllowed(allowed);
-							 dae.setUnknown(userCard != null);
+							 dae.setUnknown(userCard == null);
 							 dae.setCardId(card.getCardId());
 							 dae.setDoorName(doorName);
 							 dae.setMagic(userCard.isMagic());

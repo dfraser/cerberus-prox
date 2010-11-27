@@ -61,7 +61,11 @@ public class AmqpSender implements DoorAccessListener {
 							log.error("error marshalling door event to xml",e);
 				}
 			} else {
-				messageBodyBytes = (event.getNickName()+" has entered").getBytes();
+				if (event.isUnknown()) {
+					messageBodyBytes = "Unknown HID card".getBytes();
+				} else {
+					messageBodyBytes = (event.getNickName()+" has entered.").getBytes();
+				}
 			}
 			channel.basicPublish(exchangeName, event.getDoorName(), MessageProperties.TEXT_PLAIN, messageBodyBytes);
 		} catch (IOException e) {
