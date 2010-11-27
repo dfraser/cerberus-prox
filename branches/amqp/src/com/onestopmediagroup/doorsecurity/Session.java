@@ -76,6 +76,12 @@ public class Session {
 	 * The queue name on the AMQP broker
 	 */
 	private final String amqpQueue;
+	
+	/**
+	 * Whether or not to send the message as xml
+	 * @throws IOException
+	 */
+	private final boolean amqpSendMessageAsXml;
 
 	public Session() throws IOException {
 		
@@ -139,6 +145,15 @@ public class Session {
 		} else {
 			amqpEnabled = false;
 		}
+
+		if (properties.getProperty("amqp.sendMessageAsXml") != null && Integer.parseInt(properties.getProperty("amqp.enabled")) == 1) {
+			amqpSendMessageAsXml = true;
+		} else {
+			amqpSendMessageAsXml = false;
+		}
+
+		
+		
 		this.amqpExchange = properties.getProperty("amqp.exchangeName");
 		this.amqpQueue = properties.getProperty("amqp.queueName");
 		this.amqpHost = properties.getProperty("amqp.host");
@@ -257,5 +272,9 @@ public class Session {
 
 	public String getAmqpQueue() {
 		return amqpQueue;
+	}
+	
+	public boolean isAmqpSendMessageAsXml() {
+		return amqpSendMessageAsXml;
 	}
 }
