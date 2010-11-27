@@ -146,7 +146,7 @@ public class Session {
 			amqpEnabled = false;
 		}
 
-		if (properties.getProperty("amqp.sendMessageAsXml") != null && Integer.parseInt(properties.getProperty("amqp.enabled")) == 1) {
+		if (properties.getProperty("amqp.sendMessageAsXml") != null && Integer.parseInt(properties.getProperty("amqp.sendMessageAsXml")) == 1) {
 			amqpSendMessageAsXml = true;
 		} else {
 			amqpSendMessageAsXml = false;
@@ -182,9 +182,9 @@ public class Session {
 					throw new IllegalArgumentException(
 							"expected property (name" + portNum + ") not found");
 				}
-//				RS232SerialPort comPort = new RS232SerialPort(port, 9600, 1000);
-//				DoorController dc = new DoorController(comPort, doorName, this);
-//				doorControllers.put(doorName, dc);
+				RS232SerialPort comPort = new RS232SerialPort(port, 9600, 1000);
+				DoorController dc = new DoorController(comPort, doorName, this);
+				doorControllers.put(doorName, dc);
 			}
 		}
 

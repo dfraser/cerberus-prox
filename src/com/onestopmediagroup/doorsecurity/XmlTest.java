@@ -15,9 +15,7 @@ public class XmlTest {
 	 */
 	public static void main(String[] args) throws Exception {
 		XmlTest xt = new XmlTest();
-		xt.run();
-
-		
+		xt.run();		
 	}
 
 	private void run() throws IOException, JAXBException {
