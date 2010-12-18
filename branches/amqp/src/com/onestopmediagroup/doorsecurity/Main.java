@@ -53,11 +53,6 @@ public class Main {
 
 		session = new Session();
 
-		// Create the LedSignWriter object and set it to null
-		LedSignWriter ledSign = null;
-		if(session.isUseLedSign()) { // Check to see if we're using the led sign
-			ledSign = new LedSignWriter(session.getLedSignServiceUrl()); // If so, instantiate the object
-		}
 		AccessLogger accessLogger = new AccessLogger(session);
 
 		AmqpSender amqpSender = null;
@@ -70,9 +65,7 @@ public class Main {
 		// let's get going!
 		for (Iterator<DoorController> dcIter = session.getDoorControllers().values().iterator(); dcIter.hasNext();) {
 			DoorController dc = (DoorController) dcIter.next();
-			if(session.isUseLedSign()) { // Check to see if we're using the led sign
-				dc.addDoorAccessListener(ledSign); // If so, register the class to the event
-			}
+			
 			if (session.isAmqpEnabled()) {
 				dc.addDoorAccessListener(amqpSender);
 			}

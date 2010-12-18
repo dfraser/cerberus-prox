@@ -1,12 +1,9 @@
 package com.onestopmediagroup.doorsecurity;
 
 import java.io.IOException;
-import java.io.StringWriter;
 import java.util.Date;
 
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
 
 public class XmlTest {
 
@@ -31,7 +28,7 @@ public class XmlTest {
 		
 		Session session = new Session();
 		
-		AmqpSender as = new AmqpSender(session.getAmqpUsername(), session.getAmqpPassword(), session.getAmqpVirtualhost(), session.getAmqpHost(), session.getAmqpPort(), session.getAmqpExchange(), false);
+		AmqpSender as = new AmqpSender(session.getAmqpUsername(), session.getAmqpPassword(), session.getAmqpVirtualhost(), session.getAmqpHost(), session.getAmqpPort(), session.getAmqpExchange(), true);
 		as.doorActionEvent(dae);
 		as.close();
 		

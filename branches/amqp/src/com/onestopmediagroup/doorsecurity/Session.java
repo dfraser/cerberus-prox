@@ -29,8 +29,6 @@ public class Session {
 	private final int afterHoursEnd;
 	private final boolean afterHoursEnabled;
 	private final boolean friendlyLogRealName;
-	private final boolean useLedSign;
-	private final String ledSignServiceUrl;
 	
 	/**
 	 * True if the AMQP subsystem is supposed to be enabled.
@@ -135,11 +133,6 @@ public class Session {
 		
 		this.friendlyLogRealName = "user".equals(properties.getProperty("friendlyLogName"));
 
-		this.useLedSign = "true".equals(properties.getProperty("useLedSign"));
-		
-		this.ledSignServiceUrl = properties.getProperty("ledSignServiceUrl");
-
-		
 		if (properties.getProperty("amqp.enabled") != null && Integer.parseInt(properties.getProperty("amqp.enabled")) == 1) {
 			amqpEnabled = true;
 		} else {
@@ -190,10 +183,6 @@ public class Session {
 
 	}
 
-	public String getLedSignServiceUrl() {
-		return ledSignServiceUrl;
-	}
-
 	public boolean isFriendlyLogRealName() {
 		return friendlyLogRealName;
 	}
@@ -232,10 +221,6 @@ public class Session {
 	
 	public String getDbDriver() {
 		return dbDriver;
-	}
-	
-	public boolean isUseLedSign() {
-		return useLedSign;
 	}
 	
 	public String getAmqpExchange() {
