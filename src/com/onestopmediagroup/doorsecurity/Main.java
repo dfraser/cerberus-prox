@@ -20,7 +20,11 @@
 
 package com.onestopmediagroup.doorsecurity;
 
-import java.util.Iterator;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
@@ -32,6 +36,7 @@ public class Main {
 
 	private static Logger log = Logger.getLogger(Main.class);
 	private Session session;
+	private List<ExecutorService> doorThreadExecutors;
 	
 	/**
 	 * Main entry point to the application.
@@ -62,30 +67,31 @@ public class Main {
 		
 		log.debug("starting controller threads...");
 		
-		// let's get going!
-		for (Iterator<DoorController> dcIter = session.getDoorControllers().values().iterator(); dcIter.hasNext();) {
-			DoorController dc = (DoorController) dcIter.next();
-			
+		doorThreadExecutors = new ArrayList<ExecutorService>();
+
+		for (DoorController dc: session.getDoorControllers().values()) {
 			if (session.isAmqpEnabled()) {
 				dc.addDoorAccessListener(amqpSender);
 			}
 			dc.addDoorAccessListener(accessLogger);
-			dc.start();
+			ExecutorService dcExecutor = Executors.newSingleThreadExecutor();
+			dcExecutor.execute(dc);
+			doorThreadExecutors.add(dcExecutor);
 		}
 		
 		// start xml-rpc server
 		if (session.isRpcServerEnabled() && session.getRpcListenPort() != 0) {
-			ServerThread server = new ServerThread(session);
-			server.start();
+			ExecutorService serverExecutor = Executors.newSingleThreadExecutor();
+			serverExecutor.execute(new ServerThread(session));
 		}
 	}
 	
 	public void stop() {
 		log.debug("shutting down controller threads...");
-		for (Iterator<DoorController> dcIter = session.getDoorControllers().values().iterator(); dcIter.hasNext();) {
-			DoorController dc = (DoorController) dcIter.next();
-			dc.interrupt();
+		for (ExecutorService doorThreadExecutor : doorThreadExecutors) {
+			doorThreadExecutor.shutdown();
 		}
+
 		try {
 			Thread.sleep(2000);
 		} catch (InterruptedException e) {
@@ -100,7 +106,7 @@ public class Main {
 	 * @author dfraser
 	 *
 	 */
-	private class ServerThread extends Thread {
+	private class ServerThread implements Runnable {
 		
 		private final int port;
 
@@ -112,7 +118,6 @@ public class Main {
 		@Override
 		public void run() {
 			try {
-				super.run();
 				Server server = new Server(port);
 		    	Context context = new Context(server,"/",Context.SESSIONS);
 		    	context.addServlet(new ServletHolder(new RemoteControlService(session.getDoorControllers())), "/xml-rpc/*");        

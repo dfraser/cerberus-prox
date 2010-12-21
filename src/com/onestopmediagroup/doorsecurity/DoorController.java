@@ -37,7 +37,7 @@ import org.apache.log4j.Logger;
  * @author dfraser
  *
  */
-public class DoorController extends Thread {
+public class DoorController implements Runnable {
 
 	private static Logger log = Logger.getLogger(DoorController.class);
 	private final AccessVerifier av;
@@ -82,9 +82,8 @@ public class DoorController extends Thread {
 	 */
 	@Override
 	public void run() {
-		super.run();
 		log.debug("Controller for door '"+doorName+"' starting.");
-		while (!isInterrupted()) {
+		while (true) {
 			HIDCard card;
 			try {
 				card = cr.read();
@@ -115,24 +114,25 @@ public class DoorController extends Thread {
 							allowed = false;
 						}
 					}
-					
+
 					Date timeRead = new Date();
-					for (Iterator<DoorAccessListener> iterator = listeners.iterator(); iterator.hasNext();) {
-						 DoorAccessListener listener = iterator.next();
-						 try {							 
-							 DoorAccessEvent dae = new DoorAccessEvent();
-							 dae.setAllowed(allowed);
-							 dae.setUnknown(userCard == null);
-							 dae.setCardId(card.getCardId());
-							 dae.setDoorName(doorName);
-							 dae.setMagic(userCard.isMagic());
-							 dae.setNickName(userCard.getNickName());
-							 dae.setRealName(userCard.getRealName());
-							 dae.setTimeRead(timeRead);
-							 listener.doorActionEvent(dae); 
-						 } catch (RuntimeException e) {
-						     iterator.remove();
-						 }
+					for (DoorAccessListener listener : listeners) {
+						DoorAccessEvent dae = new DoorAccessEvent();
+						dae.setAllowed(allowed);
+						dae.setUnknown(userCard == null);
+						dae.setCardId(card.getCardId());
+						dae.setDoorName(doorName);
+						if (userCard != null) {
+							dae.setMagic(userCard.isMagic());
+							dae.setNickName(userCard.getNickName());
+							dae.setRealName(userCard.getRealName());
+						} else {
+							dae.setMagic(false);
+							dae.setNickName("Unknown");
+							dae.setRealName("Unknown");
+						}
+						dae.setTimeRead(timeRead);
+						listener.doorActionEvent(dae); 
 					}
 				} else {
 					// unlock the door if we got a trigger
@@ -149,7 +149,7 @@ public class DoorController extends Thread {
 							}
 						}
 					}
-					
+
 					// update the door state
 					if (lastPollTime + pollInterval < System.currentTimeMillis()) {
 						lastPollTime = System.currentTimeMillis();
@@ -159,13 +159,6 @@ public class DoorController extends Thread {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-		}
-		
-		// we're exiting, lock the door
-		try {
-			cr.setDoorLatches(false);
-		} catch (IOException e) {
-			// don't worry about it, we're on our way out.
 		}
 	}
 
