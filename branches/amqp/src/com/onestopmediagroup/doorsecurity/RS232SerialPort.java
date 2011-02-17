@@ -53,7 +53,7 @@ public class RS232SerialPort {
 	 * Creates a new serial port.
 	 * 
 	 * @param serialPortName the serial port to use
-	 * @param baudrate the baud rate to use in bps
+	 * @param baud the baud rate to use in bps
 	 * @param timeout the receive timeout in ms
 	 */
 	public RS232SerialPort(String serialPortName, int baud, int timeout) throws IOException {
@@ -201,7 +201,7 @@ public class RS232SerialPort {
 	/**
 	 * Sets the baudrate.
 	 * 
-	 * @param the baudrate in bps
+	 * @param baud the baudrate in bps
 	 * @throws SerialPortException if there is a problem setting the baud rate
 	 */
 	public void setBaudrate(int baud) throws SerialPortException {
@@ -221,7 +221,7 @@ public class RS232SerialPort {
 	/**
 	 * Sets the receive timeout.
 	 * 
-	 * @param the receive timeout in ms
+	 * @param rxTimeout the receive timeout in ms
 	 */
 	public void setRxTimeout(int rxTimeout) {
 		if(this.receiveTimeout == rxTimeout || rxTimeout < 0) {

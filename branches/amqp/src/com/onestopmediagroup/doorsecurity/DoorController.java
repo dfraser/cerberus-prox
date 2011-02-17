@@ -54,7 +54,7 @@ public class DoorController implements Runnable {
 	 * 
 	 * @param port the RS232SerialPort this thread is to use
 	 * @param name the name of the door to control (from database door table)
-	 * @param dbUrl the JDBC url used to connect to the database.
+	 * @param session the current configuration session
 	 */
 	public DoorController(RS232SerialPort port, String name, Session session) {
 		this.doorName = name;

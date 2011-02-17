@@ -78,8 +78,7 @@ public class AccessVerifier {
 	 * Creates a new AccessVerifier object for a specific door, and loads its cache.
 	 * 
 	 * @param doorName the door identifier that we are controlling access for  
-	 * @param dbUrl the JDBC user for our SQL database
-	 * @param dbDriver the JDBC driver classname for our SQL database
+	 * @param session the current configuration session
 	 */
 	public AccessVerifier(String doorName, Session session) {
 		this.doorName = doorName;
