@@ -54,7 +54,7 @@ public class UserCard {
 
 	/**
 	 * Creates a new AccessInfo object. These objects are created by the AccessVerifier
-	 * in response to an access request.
+	 * in response to an access request.  This is a test change!
 	 * 
 	 * @param realName the user's real name
 	 * @param nickName the user's nickname
