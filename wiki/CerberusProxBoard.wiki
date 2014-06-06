@@ -86,7 +86,7 @@ that it can be printed on the screen. (see Java software for decoding
 details)
 
 Note that not all commands return responses to the host. On error, the
-board doesn't nothing. Sending a newline or carriage return resets the
+board does nothing. Sending a newline or carriage return resets the
 receiver. HID data is sent as soon as a card is read. Note that the
 reader may beep and flash its LED green by itself when a card is
 presented. The LED and beep wires appear to OR their inputs with the
