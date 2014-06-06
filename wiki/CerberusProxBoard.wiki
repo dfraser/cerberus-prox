@@ -54,7 +54,7 @@ HID/strike board firmware.
 
 Make sure you use a good heatsink on U3. With 24V going in, under
 normal operation U3 will dissipate over 2W. It might get toasty, but
-should fine.
+should be fine.
 
 ==Host Wiring==
 
